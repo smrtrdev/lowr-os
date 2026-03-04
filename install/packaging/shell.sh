@@ -31,10 +31,6 @@ esac
 
 log_step "Installing shell configs..."
 
-# Bash configs
-install_config "smrtr/bash/aliases.sh" "$USER_CONFIG/smrtr/bash/aliases.sh"
-install_config "smrtr/bash/functions.sh" "$USER_CONFIG/smrtr/bash/functions.sh"
-
 # Nushell configs
 install_config "nushell/config.nu" "$USER_CONFIG/nushell/config.nu"
 install_config "nushell/env.nu" "$USER_CONFIG/nushell/env.nu"
@@ -50,7 +46,7 @@ install_config "zellij/layouts/default.kdl" "$USER_CONFIG/zellij/layouts/default
 # --- Bashrc Integration ---
 
 log_step "Configuring .bashrc..."
-install_config "smrtr/bash/bashrc" "$HOME/.bashrc"
+install_config ".bashrc" "$HOME/.bashrc" "$REPO_DIR/config"
 
 # --- Create cache dirs for nushell integrations ---
 

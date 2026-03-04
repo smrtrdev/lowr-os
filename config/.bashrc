@@ -1,6 +1,7 @@
 # smrtr-os shell integration
-source ~/.config/smrtr/bash/aliases.sh
-source ~/.config/smrtr/bash/functions.sh
+SMRTR_DEFAULT="${SMRTR_PATH:-$HOME/.local/share/smrtr-os}/default"
+source "$SMRTR_DEFAULT/bash/aliases.sh"
+source "$SMRTR_DEFAULT/bash/functions.sh"
 export PATH="$HOME/.local/share/smrtr-os/bin:$PATH"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"

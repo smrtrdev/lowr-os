@@ -4,7 +4,8 @@
 
 # Constants
 REPO_DIR="${SMRTR_PATH:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-CONFIG_DIR="$REPO_DIR/config"
+CONFIG_DIR="$REPO_DIR/config/.config"
+DEFAULT_DIR="$REPO_DIR/default"
 USER_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
 BACKUP_DIR="$USER_CONFIG/smrtr-backup/$(date +%Y%m%d_%H%M%S)"
 PARU_BIN=""
@@ -196,7 +197,8 @@ backup_config() {
 install_config() {
     local source_rel="$1"
     local target="$2"
-    local source="$CONFIG_DIR/$source_rel"
+    local base="${3:-$CONFIG_DIR}"
+    local source="$base/$source_rel"
 
     if [[ ! -e "$source" ]]; then
         log_error "Config source not found: $source"
