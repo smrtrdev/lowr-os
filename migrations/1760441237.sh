@@ -1,3 +1,3 @@
-echo "Install Omarchy theme on Obsidian vaults"
+echo "Install Smrtr theme on Obsidian vaults"
 
-omarchy-theme-set-obsidian
+smrtr-theme-set-obsidian

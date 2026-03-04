@@ -1,3 +1,3 @@
-echo "Use new Omarchy mirror as default"
+echo "Use new Smrtr mirror as default"
 
-omarchy-refresh-pacman
+smrtr-refresh-pacman

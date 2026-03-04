@@ -9,7 +9,7 @@
 
 # Command Naming
 
-All commands start with `omarchy-`. Prefixes indicate purpose:
+All commands start with `smrtr-`. Prefixes indicate purpose:
 
 - `cmd-` - check if commands exist, misc utility commands
 - `pkg-` - package management helpers
@@ -27,10 +27,10 @@ All commands start with `omarchy-`. Prefixes indicate purpose:
 
 Use these instead of raw shell commands:
 
-- `omarchy-cmd-missing` / `omarchy-cmd-present` - check for commands
-- `omarchy-pkg-missing` / `omarchy-pkg-present` - check for packages
-- `omarchy-pkg-add` - install packages (handles both pacman and AUR)
-- `omarchy-hw-asus-rog` - detect ASUS ROG hardware (and similar `hw-*` commands)
+- `smrtr-cmd-missing` / `smrtr-cmd-present` - check for commands
+- `smrtr-pkg-missing` / `smrtr-pkg-present` - check for packages
+- `smrtr-pkg-add` - install packages (handles both pacman and AUR)
+- `smrtr-hw-asus-rog` - detect ASUS ROG hardware (and similar `hw-*` commands)
 
 # Config Structure
 
@@ -43,25 +43,25 @@ Use these instead of raw shell commands:
 To copy a default config to user config with automatic backup:
 
 ```bash
-omarchy-refresh-config hypr/hyprlock.conf
+smrtr-refresh-config hypr/hyprlock.conf
 ```
 
-This copies `~/.local/share/omarchy/config/hypr/hyprlock.conf` to `~/.config/hypr/hyprlock.conf`.
+This copies `~/.local/share/smrtr/config/hypr/hyprlock.conf` to `~/.config/hypr/hyprlock.conf`.
 
 # Migrations
 
-To create a new migration, run `omarchy-dev-add-migration --no-edit`. This creates a migration file named after the unix timestamp of the last commit.
+To create a new migration, run `smrtr-dev-add-migration --no-edit`. This creates a migration file named after the unix timestamp of the last commit.
 
 Migration format:
 - No shebang line
 - Start with an `echo` describing what the migration does
-- Use `$OMARCHY_PATH` to reference the omarchy directory
+- Use `$SMRTR_PATH` to reference the smrtr directory
 
 Example:
 ```bash
 echo "Disable fingerprint in hyprlock if fingerprint auth is not configured"
 
-if omarchy-cmd-missing fprintd-list || ! fprintd-list "$USER" 2>/dev/null | grep -q "finger"; then
+if smrtr-cmd-missing fprintd-list || ! fprintd-list "$USER" 2>/dev/null | grep -q "finger"; then
   sed -i 's/fingerprint:enabled = .*/fingerprint:enabled = false/' ~/.config/hypr/hyprlock.conf
 fi
 ```

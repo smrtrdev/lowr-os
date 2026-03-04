@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Refresh the SDDM theme from default
+
+sudo rm -rf /usr/share/sddm/themes/smrtr
+sudo cp -r $SMRTR_PATH/default/sddm/smrtr /usr/share/sddm/themes/smrtr

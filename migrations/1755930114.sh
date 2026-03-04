@@ -1,5 +1,5 @@
-echo "Add new Omarchy Menu icon to Waybar"
+echo "Add new Smrtr Menu icon to Waybar"
 
 mkdir -p ~/.local/share/fonts
-cp ~/.local/share/omarchy/config/omarchy.ttf ~/.local/share/fonts/
+cp ~/.local/share/smrtr/config/smrtr.ttf ~/.local/share/fonts/
 fc-cache

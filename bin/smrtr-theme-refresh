@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Refresh the current theme from its templates.
+
+THEME_NAME_PATH="$HOME/.config/smrtr/current/theme.name"
+
+if [[ -f $THEME_NAME_PATH ]]; then
+  smrtr-theme-set "$(cat $THEME_NAME_PATH)"
+fi

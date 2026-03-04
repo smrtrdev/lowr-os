@@ -9,15 +9,15 @@ if ! grep -q "map shift+insert paste_from_clipboard" "$KITTY_CONF"; then
 fi
 
 echo "Copy hooks examples"
-cp -r $OMARCHY_PATH/config/omarchy/* $HOME/.config/omarchy/
+cp -r $SMRTR_PATH/config/smrtr/* $HOME/.config/smrtr/
 
-echo "Add packages for updated omarchy-cmd-screenshot"
-omarchy-pkg-add grim slurp
+echo "Add packages for updated smrtr-cmd-screenshot"
+smrtr-pkg-add grim slurp
 
 echo "Add nfs support by default to Nautilus"
-omarchy-pkg-add gvfs-nfs
+smrtr-pkg-add gvfs-nfs
 
 if [[ ! -d $HOME/.config/nvim ]]; then
   echo "Add missing nvim config"
-  omarchy-nvim-setup
+  smrtr-nvim-setup
 fi

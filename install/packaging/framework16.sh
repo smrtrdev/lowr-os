@@ -1,3 +1,3 @@
-if omarchy-hw-framework16; then
-  omarchy-pkg-add qmk-hid
+if smrtr-hw-framework16; then
+  smrtr-pkg-add qmk-hid
 fi

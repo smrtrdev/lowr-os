@@ -1,9 +1,9 @@
-# Omarchy
+# Smrtr
 
-Omarchy is a beautiful, modern & opinionated Linux distribution by DHH.
+Smrtr is a beautiful, modern & opinionated Linux distribution by DHH.
 
-Read more at [omarchy.org](https://omarchy.org).
+Read more at [smrtr.org](https://smrtr.org).
 
 ## License
 
-Omarchy is released under the [MIT License](https://opensource.org/licenses/MIT).
+Smrtr is released under the [MIT License](https://opensource.org/licenses/MIT).

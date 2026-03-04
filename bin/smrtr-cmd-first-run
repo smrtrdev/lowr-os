@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Finish the installation of Smrtr with items that can only be done after logging in.
+
+set -e
+
+FIRST_RUN_MODE=~/.local/state/smrtr/first-run.mode
+
+if [[ -f $FIRST_RUN_MODE ]]; then
+  rm -f "$FIRST_RUN_MODE"
+
+  bash "$SMRTR_PATH/install/first-run/battery-monitor.sh"
+  bash "$SMRTR_PATH/install/first-run/cleanup-reboot-sudoers.sh"
+  bash "$SMRTR_PATH/install/first-run/firewall.sh"
+  bash "$SMRTR_PATH/install/first-run/dns-resolver.sh"
+  bash "$SMRTR_PATH/install/first-run/gnome-theme.sh"
+  bash "$SMRTR_PATH/install/first-run/elephant.sh"
+  sudo rm -f /etc/sudoers.d/first-run
+
+  bash "$SMRTR_PATH/install/first-run/welcome.sh"
+  bash "$SMRTR_PATH/install/first-run/wifi.sh"
+fi

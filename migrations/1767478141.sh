@@ -1,3 +1,3 @@
-echo "Add Omarchy AI skill for assistance tailoring the system"
+echo "Add Smrtr AI skill for assistance tailoring the system"
 
-source $OMARCHY_PATH/install/config/omarchy-ai-skill.sh
+source $SMRTR_PATH/install/config/smrtr-ai-skill.sh

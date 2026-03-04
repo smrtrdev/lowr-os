@@ -1,5 +1,5 @@
-# Install omarchy SDDM theme
-omarchy-refresh-sddm
+# Install smrtr SDDM theme
+smrtr-refresh-sddm
 
 # Setup SDDM login service
 sudo mkdir -p /etc/sddm.conf.d
@@ -10,7 +10,7 @@ User=$USER
 Session=hyprland-uwsm
 
 [Theme]
-Current=omarchy
+Current=smrtr
 EOF
 fi
 

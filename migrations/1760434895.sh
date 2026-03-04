@@ -1,6 +1,6 @@
-echo "Change to omarchy-nvim package"
-omarchy-pkg-drop omarchy-lazyvim
-omarchy-pkg-add omarchy-nvim
+echo "Change to smrtr-nvim package"
+smrtr-pkg-drop smrtr-lazyvim
+smrtr-pkg-add smrtr-nvim
 
 # Will trigger to overwrite configs or not to pickup new hot-reload themes
-omarchy-nvim-setup
+smrtr-nvim-setup

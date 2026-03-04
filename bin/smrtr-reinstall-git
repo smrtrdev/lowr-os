@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+# Reinstall the Smrtr configuration directory from the git source.
+
+git clone "https://github.com/basecamp/smrtr.git" ~/.local/share/smrtr-new >/dev/null
+mv $SMRTR_PATH ~/.local/share/smrtr-old
+mv ~/.local/share/smrtr-new $SMRTR_PATH

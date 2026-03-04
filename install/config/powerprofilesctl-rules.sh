@@ -1,5 +1,5 @@
-if omarchy-battery-present; then
-  mapfile -t profiles < <(omarchy-powerprofiles-list)
+if smrtr-battery-present; then
+  mapfile -t profiles < <(smrtr-powerprofiles-list)
 
   if (( ${#profiles[@]} > 1 )); then
 

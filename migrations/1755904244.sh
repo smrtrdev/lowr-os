@@ -1,6 +1,6 @@
-echo "Update fastfetch config with new Omarchy logo"
+echo "Update fastfetch config with new Smrtr logo"
 
-omarchy-refresh-config fastfetch/config.jsonc
+smrtr-refresh-config fastfetch/config.jsonc
 
-mkdir -p ~/.config/omarchy/branding
-cp $OMARCHY_PATH/icon.txt ~/.config/omarchy/branding/about.txt
+mkdir -p ~/.config/smrtr/branding
+cp $SMRTR_PATH/icon.txt ~/.config/smrtr/branding/about.txt

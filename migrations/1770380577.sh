@@ -1,5 +1,5 @@
 echo "Use interactive background selector menu"
 
 mkdir -p ~/.config/elephant/menus
-ln -snf $OMARCHY_PATH/default/elephant/omarchy_background_selector.lua ~/.config/elephant/menus/omarchy_background_selector.lua
-omarchy-restart-walker
+ln -snf $SMRTR_PATH/default/elephant/smrtr_background_selector.lua ~/.config/elephant/menus/smrtr_background_selector.lua
+smrtr-restart-walker

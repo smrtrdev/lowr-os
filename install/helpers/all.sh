@@ -1,4 +1,4 @@
-source $OMARCHY_INSTALL/helpers/chroot.sh
-source $OMARCHY_INSTALL/helpers/presentation.sh
-source $OMARCHY_INSTALL/helpers/errors.sh
-source $OMARCHY_INSTALL/helpers/logging.sh
+source $SMRTR_INSTALL/helpers/chroot.sh
+source $SMRTR_INSTALL/helpers/presentation.sh
+source $SMRTR_INSTALL/helpers/errors.sh
+source $SMRTR_INSTALL/helpers/logging.sh

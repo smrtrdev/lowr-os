@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Launch a floating terminal with the Smrtr logo presentation, then execute the command passed in, and finally end with the smrtr-show-done presentation.
+# Used by actions such as Update System.
+
+cmd="$*"
+exec setsid uwsm-app -- xdg-terminal-exec --app-id=org.smrtr.terminal --title=Smrtr -e bash -c "smrtr-show-logo; $cmd; if (( \$? != 130 )); then smrtr-show-done; fi"

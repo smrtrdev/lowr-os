@@ -1,3 +1,3 @@
 echo "Add potentially missing dependency for power profile controls"
 
-omarchy-pkg-add python-gobject
+smrtr-pkg-add python-gobject
