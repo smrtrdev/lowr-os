@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rfkill unblock wifi
+exec smrtr-launch-or-focus-tui impala

@@ -24,27 +24,39 @@
   },
 
   "network": {
-    "format-wifi": " {essid}",
-    "format-ethernet": " {ifname}",
-    "format-disconnected": "󰤭 ",
-    "tooltip-format": "{ipaddr}",
-    "on-click": "ghostty -e nmtui"
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "on-click": "smrtr-launch-wifi"
   },
 
   "bluetooth": {
-    "format": "",
-    "format-connected": " {device_alias}",
-    "format-disabled": "",
-    "on-click": "ghostty -e bluetuith"
+    "format": "",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "smrtr-launch-bluetooth"
   },
 
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰖁 ",
+    "format": "{icon}",
+    "format-muted": "",
     "format-icons": {
-      "default": ["", "", ""]
+      "headphone": "",
+      "headset": "",
+      "default": ["", "", ""]
     },
-    "on-click": "ghostty -e pulsemixer"
+    "tooltip-format": "Playing at {volume}%",
+    "on-click": "smrtr-launch-audio",
+    "on-click-right": "pamixer -t"
   },
 
   "battery": {

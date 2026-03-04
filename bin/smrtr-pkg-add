@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# smrtr-pkg-add — install packages from pacman or AUR (via paru)
+# Usage: smrtr-pkg-add <package> [package...]
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: smrtr-pkg-add <package> [package...]" >&2
+    exit 1
+fi
+
+pkg_installed() {
+    pacman -Qi "$1" &>/dev/null
+}
+
+find_paru() {
+    if [[ -x /usr/bin/paru ]]; then
+        echo /usr/bin/paru
+    elif command -v paru &>/dev/null; then
+        command -v paru
+    else
+        return 1
+    fi
+}
+
+pacman_pkgs=()
+aur_pkgs=()
+
+for pkg in "$@"; do
+    if pkg_installed "$pkg"; then
+        continue
+    fi
+    if pacman -Si "$pkg" &>/dev/null; then
+        pacman_pkgs+=("$pkg")
+    else
+        aur_pkgs+=("$pkg")
+    fi
+done
+
+if [[ ${#pacman_pkgs[@]} -gt 0 ]]; then
+    sudo pacman -S --needed --noconfirm "${pacman_pkgs[@]}"
+fi
+
+if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
+    paru_bin="$(find_paru)" || {
+        printf '\033[31mError: paru not found, cannot install AUR packages: %s\033[0m\n' "${aur_pkgs[*]}" >&2
+        exit 1
+    }
+    "$paru_bin" -S --needed --noconfirm "${aur_pkgs[@]}"
+fi
+
+for pkg in "$@"; do
+    if ! pacman -Q "$pkg" &>/dev/null; then
+        printf '\033[31mError: Package '\''%s'\'' did not install\033[0m\n' "$pkg" >&2
+        exit 1
+    fi
+done

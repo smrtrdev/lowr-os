@@ -2,33 +2,22 @@
 set -euo pipefail
 source "$SMRTR_INSTALL/helpers/helpers.sh"
 
-# --- Core Packages ---
-
-log_step "Installing core packages..."
-pkg_install base-devel git wget curl jq unzip zip man-db
-
-log_step "Installing filesystem tools..."
-pkg_install ntfs-3g exfatprogs udisks2
-
 # --- AUR Helper (paru) ---
 
 log_step "Setting up paru..."
 ensure_paru
 log_info "paru is ready."
 
-# --- Audio (PipeWire) ---
+# --- Packages ---
 
-log_step "Installing PipeWire audio stack..."
-pkg_install pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+mapfile -t packages < <(grep -v '^#' "$SMRTR_INSTALL/smrtr-base.packages" | grep -v '^$')
+smrtr-pkg-add "${packages[@]}"
+
+# --- Services ---
 
 enable_user_service pipewire.service
 enable_user_service pipewire-pulse.service
 enable_user_service wireplumber.service
-
-# --- Networking ---
-
-log_step "Installing networking..."
-pkg_install networkmanager iwd
 
 # Configure NetworkManager to use iwd as backend
 sudo mkdir -p /etc/NetworkManager/conf.d
@@ -41,25 +30,18 @@ fi
 
 enable_service NetworkManager.service
 enable_service iwd.service
-
-# --- Bluetooth ---
-
-log_step "Installing bluetooth..."
-pkg_install bluez bluez-utils
 enable_service bluetooth.service
 
 # --- Printing (optional) ---
 
 if ask_yes_no "Install printing support (CUPS)?" "n"; then
     log_step "Installing CUPS..."
-    pkg_install cups cups-pdf
+    smrtr-pkg-add cups cups-pdf
     enable_service cups.service
 fi
 
 # --- Firewall ---
 
-log_step "Installing firewall..."
-pkg_install ufw
 enable_service ufw.service
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
@@ -73,17 +55,17 @@ log_info "Detected: $gpu_info"
 
 if echo "$gpu_info" | grep -qi "intel"; then
     log_step "Installing Intel GPU drivers..."
-    pkg_install mesa vulkan-intel intel-media-driver
+    smrtr-pkg-add mesa vulkan-intel intel-media-driver
 fi
 
 if echo "$gpu_info" | grep -qi "amd\|radeon"; then
     log_step "Installing AMD GPU drivers..."
-    pkg_install mesa vulkan-radeon libva-mesa-driver
+    smrtr-pkg-add mesa vulkan-radeon libva-mesa-driver
 fi
 
 if echo "$gpu_info" | grep -qi "nvidia"; then
     log_step "Installing NVIDIA GPU drivers..."
-    pkg_install nvidia nvidia-utils nvidia-settings
+    smrtr-pkg-add nvidia nvidia-utils nvidia-settings
 fi
 
 log_info "Base packages setup complete."

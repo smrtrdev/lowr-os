@@ -8,7 +8,10 @@ Install and configure Waybar as the status bar with essential system info module
 
 ### Packages
 - `waybar`
-- `otf-font-awesome` — Icons used in waybar modules
+- `woff2-font-awesome` — Icons used in waybar modules
+- `bluetui` — TUI bluetooth manager
+- `impala` — TUI wifi manager
+- `wiremix` — TUI audio manager
 
 ### Configuration
 
@@ -41,27 +44,31 @@ Install and configure Waybar as the status bar with essential system info module
   },
 
   "network": {
-    "format-wifi": " {essid}",
-    "format-ethernet": " {ifname}",
-    "format-disconnected": "󰤭 ",
-    "tooltip-format": "{ipaddr}",
-    "on-click": "ghostty -e nmtui"
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "on-click": "smrtr-launch-wifi"
   },
 
   "bluetooth": {
-    "format": "",
-    "format-connected": " {device_alias}",
-    "format-disabled": "",
-    "on-click": "ghostty -e bluetuith"
+    "format": "",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "on-click": "smrtr-launch-bluetooth"
   },
 
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "󰖁 ",
+    "format": "{icon}",
+    "format-muted": "",
     "format-icons": {
-      "default": ["", "", ""]
+      "headphone": "",
+      "headset": "",
+      "default": ["", "", ""]
     },
-    "on-click": "ghostty -e pulsemixer"
+    "on-click": "smrtr-launch-audio"
   },
 
   "battery": {
@@ -105,9 +112,9 @@ Install and configure Waybar as the status bar with essential system info module
 - Waybar appears at the top of the screen when Niri starts.
 - All modules display correct data (time, network, volume, workspaces).
 - Clicking workspaces in waybar switches to that workspace.
-- Clicking network module opens nmtui in a terminal.
-- Clicking bluetooth module opens bluetuith in a terminal.
-- Clicking audio module opens pulsemixer in a terminal.
+- Clicking network module opens impala in a terminal.
+- Clicking bluetooth module opens bluetui in a terminal.
+- Clicking audio module opens wiremix in a terminal.
 - Battery module only shows on laptops.
 - Visual style is clean and consistent.
 

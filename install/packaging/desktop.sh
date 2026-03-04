@@ -14,7 +14,7 @@ pkg_install niri uwsm xwayland-satellite \
     imagemagick
 
 log_step "Installing AUR packages for Niri..."
-aur_install cliphist bluetuith wlsunset
+aur_install cliphist wlsunset
 
 # --- Install configs ---
 

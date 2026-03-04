@@ -31,8 +31,9 @@ Install and configure Niri as the Wayland compositor — a scrollable-tiling win
 - `wlsunset` — Night light (blue light filter)
 - `grim` — Screenshot (used by niri's built-in screenshot action)
 - `slurp` — Region selection (for custom screenshot scripts)
-- `pulsemixer` — TUI audio mixer (launched from waybar)
-- `bluetuith` (AUR) — TUI bluetooth manager (launched from waybar)
+- `wiremix` — TUI audio mixer (launched from waybar)
+- `bluetui` (AUR) — TUI bluetooth manager (launched from waybar)
+- `impala` (AUR) — TUI wifi manager (launched from waybar)
 
 ### Configuration
 
