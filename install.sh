@@ -1,12 +1,18 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
 
-export SMRTR_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export SMRTR_INSTALL="$SMRTR_PATH/install"
+# Exit immediately if a command exits with a non-zero status
+set -eEo pipefail
 
-source "$SMRTR_INSTALL/helpers/all.sh"
-source "$SMRTR_INSTALL/preflight/all.sh"
-source "$SMRTR_INSTALL/packaging/all.sh"
-source "$SMRTR_INSTALL/config/all.sh"
-source "$SMRTR_INSTALL/login/all.sh"
-source "$SMRTR_INSTALL/post-install/all.sh"
+# Define Omarchy locations
+export OMARCHY_PATH="$HOME/.local/share/omarchy"
+export OMARCHY_INSTALL="$OMARCHY_PATH/install"
+export OMARCHY_INSTALL_LOG_FILE="/var/log/omarchy-install.log"
+export PATH="$OMARCHY_PATH/bin:$PATH"
+
+# Install
+source "$OMARCHY_INSTALL/helpers/all.sh"
+source "$OMARCHY_INSTALL/preflight/all.sh"
+source "$OMARCHY_INSTALL/packaging/all.sh"
+source "$OMARCHY_INSTALL/config/all.sh"
+source "$OMARCHY_INSTALL/login/all.sh"
+source "$OMARCHY_INSTALL/post-install/all.sh"

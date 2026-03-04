@@ -1,4 +1,0 @@
-# Changes require a restart to take effect.
-
-# Ensure user-local launchers are available to compositor keybind spawns.
-export PATH=$HOME/.local/bin:$PATH

@@ -1,67 +1,9 @@
-log_step "Running packaging scripts..."
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "base"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/base.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "theme"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/theme.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "development"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/development.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "shell"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/shell.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "desktop"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/desktop.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "terminal"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/terminal.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "waybar"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/waybar.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "launcher"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/launcher.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "notifications"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/notifications.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "files"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/files.sh"
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "browser"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/packaging/browser.sh"
+run_logged $OMARCHY_INSTALL/packaging/base.sh
+run_logged $OMARCHY_INSTALL/packaging/fonts.sh
+run_logged $OMARCHY_INSTALL/packaging/nvim.sh
+run_logged $OMARCHY_INSTALL/packaging/icons.sh
+run_logged $OMARCHY_INSTALL/packaging/webapps.sh
+run_logged $OMARCHY_INSTALL/packaging/tuis.sh
+run_logged $OMARCHY_INSTALL/packaging/asus-rog.sh
+run_logged $OMARCHY_INSTALL/packaging/framework16.sh
+run_logged $OMARCHY_INSTALL/packaging/surface.sh

@@ -1,21 +1,17 @@
-#!/usr/bin/env bash
-set -euo pipefail
-source "$SMRTR_INSTALL/helpers/helpers.sh"
+if [[ -n ${OMARCHY_ONLINE_INSTALL:-} ]]; then
+  # Install build tools
+  omarchy-pkg-add base-devel
 
-log_step "Configuring pacman..."
+  # Configure pacman
+  sudo cp -f ~/.local/share/omarchy/default/pacman/pacman-${OMARCHY_MIRROR:-stable}.conf /etc/pacman.conf
+  sudo cp -f ~/.local/share/omarchy/default/pacman/mirrorlist-${OMARCHY_MIRROR:-stable} /etc/pacman.d/mirrorlist
 
-# Enable Color, ParallelDownloads, ILoveCandy
-sudo sed -i 's/^#Color$/Color/' /etc/pacman.conf
-sudo sed -i 's/^#ParallelDownloads.*/ParallelDownloads = 5/' /etc/pacman.conf
-if ! grep -q "^ILoveCandy" /etc/pacman.conf; then
-    sudo sed -i '/^ParallelDownloads/a ILoveCandy' /etc/pacman.conf
+  sudo pacman-key --recv-keys 40DFB630FF42BCFFB047046CF0134EE680CAC571 --keyserver keys.openpgp.org
+  sudo pacman-key --lsign-key 40DFB630FF42BCFFB047046CF0134EE680CAC571
+
+  sudo pacman -Sy
+  omarchy-pkg-add omarchy-keyring
+
+  # Refresh all repos
+  sudo pacman -Syyuu --noconfirm
 fi
-
-# Enable multilib
-if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
-    sudo bash -c 'echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf'
-fi
-
-sudo pacman -Syu --noconfirm
-
-log_info "Pacman configured."
