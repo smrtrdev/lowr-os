@@ -15,8 +15,19 @@ while [[ "$probe" != "/" ]]; do
 done
 
 if [[ -z "$current_repo" ]]; then
-    log_error "Could not locate smrtr-os repository from: $script_dir"
-    exit 1
+    log_info "Could not locate smrtr-os repository from: $script_dir"
+    log_info "Cloning smrtr-os repo to: $desired_repo"
+    mkdir -p "$(dirname "$desired_repo")"
+
+    if [[ -e "$desired_repo" ]]; then
+        log_error "Destination already exists: $desired_repo"
+        log_error "Please remove or move it, then rerun the installer."
+        exit 1
+    fi
+
+    git clone "https://codeberg.org/smrtr/smrtr-os.git" "$desired_repo"
+    log_info "Restarting installer from cloned path: $desired_repo/install.sh"
+    exec bash -lc "cd \"$desired_repo\" && ./install.sh"
 fi
 
 if [[ "$current_repo" == "$desired_repo" ]]; then
