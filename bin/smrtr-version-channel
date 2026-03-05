@@ -10,11 +10,11 @@ else
   mirror="unknown"
 fi
 
-if grep -q "https://pkgs.smrtr.org/stable/" /etc/pacman.conf; then
+if grep -q "https://pkgs.omarchy.org/stable/" /etc/pacman.conf; then
   pkgs="stable"
-elif grep -q "https://pkgs.smrtr.org/edge/" /etc/pacman.conf; then
+elif grep -q "https://pkgs.omarchy.org/edge/" /etc/pacman.conf; then
   pkgs="edge"
-elif grep -q "https://pkgs.smrtr.org/rc/" /etc/pacman.conf; then
+elif grep -q "https://pkgs.omarchy.org/rc/" /etc/pacman.conf; then
   pkgs="rc"
 else
   pkgs="unknown"
