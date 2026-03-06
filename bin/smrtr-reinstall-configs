@@ -17,4 +17,4 @@ $(bash $SMRTR_PATH/install/config/theme.sh)
 
 smrtr-refresh-limine
 smrtr-refresh-plymouth
-smrtr-nvim-setup
+omarchy-nvim-setup
