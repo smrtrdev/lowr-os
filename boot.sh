@@ -34,7 +34,7 @@ fi
 sudo pacman -Syu --noconfirm --needed git
 
 # Use custom repo if specified, otherwise default to smrtr/lowr-os
-LOWR_REPO="${LOWR_REPO:-smrtr/smrtr-os}"
+LOWR_REPO="${LOWR_REPO:-smrtr/lowr-os}"
 
 echo -e "\nCloning Lowr from: https://codeberg.org/${LOWR_REPO}.git"
 rm -rf ~/.local/share/lowr/
