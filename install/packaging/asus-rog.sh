@@ -1,3 +1,3 @@
-if smrtr-hw-asus-rog; then
-  smrtr-pkg-add asusctl
+if lowr-hw-asus-rog; then
+  lowr-pkg-add asusctl
 fi

@@ -16,7 +16,7 @@ start_log_output() {
 
     while true; do
       # Read the last N lines into an array
-      mapfile -t current_lines < <(tail -n $log_lines "$SMRTR_INSTALL_LOG_FILE" 2>/dev/null)
+      mapfile -t current_lines < <(tail -n $log_lines "$LOWR_INSTALL_LOG_FILE" 2>/dev/null)
 
       # Build complete output buffer with escape sequences
       output=""
@@ -53,12 +53,12 @@ stop_log_output() {
 }
 
 start_install_log() {
-  sudo touch "$SMRTR_INSTALL_LOG_FILE"
-  sudo chmod 666 "$SMRTR_INSTALL_LOG_FILE"
+  sudo touch "$LOWR_INSTALL_LOG_FILE"
+  sudo chmod 666 "$LOWR_INSTALL_LOG_FILE"
 
-  export SMRTR_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+  export LOWR_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
-  echo "=== Smrtr Installation Started: $SMRTR_START_TIME ===" >>"$SMRTR_INSTALL_LOG_FILE"
+  echo "=== Lowr Installation Started: $LOWR_START_TIME ===" >>"$LOWR_INSTALL_LOG_FILE"
   start_log_output
 }
 
@@ -66,11 +66,11 @@ stop_install_log() {
   stop_log_output
   show_cursor
 
-  if [[ -n ${SMRTR_INSTALL_LOG_FILE:-} ]]; then
-    SMRTR_END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "=== Smrtr Installation Completed: $SMRTR_END_TIME ===" >>"$SMRTR_INSTALL_LOG_FILE"
-    echo "" >>"$SMRTR_INSTALL_LOG_FILE"
-    echo "=== Installation Time Summary ===" >>"$SMRTR_INSTALL_LOG_FILE"
+  if [[ -n ${LOWR_INSTALL_LOG_FILE:-} ]]; then
+    LOWR_END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "=== Lowr Installation Completed: $LOWR_END_TIME ===" >>"$LOWR_INSTALL_LOG_FILE"
+    echo "" >>"$LOWR_INSTALL_LOG_FILE"
+    echo "=== Installation Time Summary ===" >>"$LOWR_INSTALL_LOG_FILE"
 
     if [[ -f "/var/log/archinstall/install.log" ]]; then
       ARCHINSTALL_START=$(grep -m1 '^\[' /var/log/archinstall/install.log 2>/dev/null | sed 's/^\[\([^]]*\)\].*/\1/' || true)
@@ -84,30 +84,30 @@ stop_install_log() {
         ARCH_MINS=$((ARCH_DURATION / 60))
         ARCH_SECS=$((ARCH_DURATION % 60))
 
-        echo "Archinstall: ${ARCH_MINS}m ${ARCH_SECS}s" >>"$SMRTR_INSTALL_LOG_FILE"
+        echo "Archinstall: ${ARCH_MINS}m ${ARCH_SECS}s" >>"$LOWR_INSTALL_LOG_FILE"
       fi
     fi
 
-    if [[ -n $SMRTR_START_TIME ]]; then
-      SMRTR_START_EPOCH=$(date -d "$SMRTR_START_TIME" +%s)
-      SMRTR_END_EPOCH=$(date -d "$SMRTR_END_TIME" +%s)
-      SMRTR_DURATION=$((SMRTR_END_EPOCH - SMRTR_START_EPOCH))
+    if [[ -n $LOWR_START_TIME ]]; then
+      LOWR_START_EPOCH=$(date -d "$LOWR_START_TIME" +%s)
+      LOWR_END_EPOCH=$(date -d "$LOWR_END_TIME" +%s)
+      LOWR_DURATION=$((LOWR_END_EPOCH - LOWR_START_EPOCH))
 
-      SMRTR_MINS=$((SMRTR_DURATION / 60))
-      SMRTR_SECS=$((SMRTR_DURATION % 60))
+      LOWR_MINS=$((LOWR_DURATION / 60))
+      LOWR_SECS=$((LOWR_DURATION % 60))
 
-      echo "Smrtr:     ${SMRTR_MINS}m ${SMRTR_SECS}s" >>"$SMRTR_INSTALL_LOG_FILE"
+      echo "Lowr:     ${LOWR_MINS}m ${LOWR_SECS}s" >>"$LOWR_INSTALL_LOG_FILE"
 
       if [[ -n $ARCH_DURATION ]]; then
-        TOTAL_DURATION=$((ARCH_DURATION + SMRTR_DURATION))
+        TOTAL_DURATION=$((ARCH_DURATION + LOWR_DURATION))
         TOTAL_MINS=$((TOTAL_DURATION / 60))
         TOTAL_SECS=$((TOTAL_DURATION % 60))
-        echo "Total:       ${TOTAL_MINS}m ${TOTAL_SECS}s" >>"$SMRTR_INSTALL_LOG_FILE"
+        echo "Total:       ${TOTAL_MINS}m ${TOTAL_SECS}s" >>"$LOWR_INSTALL_LOG_FILE"
       fi
     fi
-    echo "=================================" >>"$SMRTR_INSTALL_LOG_FILE"
+    echo "=================================" >>"$LOWR_INSTALL_LOG_FILE"
 
-    echo "Rebooting system..." >>"$SMRTR_INSTALL_LOG_FILE"
+    echo "Rebooting system..." >>"$LOWR_INSTALL_LOG_FILE"
   fi
 }
 
@@ -116,18 +116,18 @@ run_logged() {
 
   export CURRENT_SCRIPT="$script"
 
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting: $script" >>"$SMRTR_INSTALL_LOG_FILE"
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting: $script" >>"$LOWR_INSTALL_LOG_FILE"
 
   # Use bash -c to create a clean subshell
-  bash -c "source '$script'" </dev/null >>"$SMRTR_INSTALL_LOG_FILE" 2>&1
+  bash -c "source '$script'" </dev/null >>"$LOWR_INSTALL_LOG_FILE" 2>&1
 
   local exit_code=$?
 
   if (( exit_code == 0 )); then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Completed: $script" >>"$SMRTR_INSTALL_LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Completed: $script" >>"$LOWR_INSTALL_LOG_FILE"
     unset CURRENT_SCRIPT
   else
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Failed: $script (exit code: $exit_code)" >>"$SMRTR_INSTALL_LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Failed: $script (exit code: $exit_code)" >>"$LOWR_INSTALL_LOG_FILE"
   fi
 
   return $exit_code

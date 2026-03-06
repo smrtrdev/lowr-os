@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-
-echo -e "\e[32mUpdate Smrtr\e[0m"
-
-git -C $SMRTR_PATH pull --autostash
-git -C $SMRTR_PATH --no-pager diff --check || git -C $SMRTR_PATH reset --merge

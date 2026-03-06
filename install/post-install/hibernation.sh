@@ -1,2 +1,2 @@
 # Enable hibernation
-smrtr-hibernation-setup --force
+lowr-hibernation-setup --force

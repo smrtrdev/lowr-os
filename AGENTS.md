@@ -9,7 +9,7 @@
 
 # Command Naming
 
-All commands start with `smrtr-`. Prefixes indicate purpose:
+All commands start with `lowr-`. Prefixes indicate purpose:
 
 - `cmd-` - check if commands exist, misc utility commands
 - `pkg-` - package management helpers
@@ -27,10 +27,10 @@ All commands start with `smrtr-`. Prefixes indicate purpose:
 
 Use these instead of raw shell commands:
 
-- `smrtr-cmd-missing` / `smrtr-cmd-present` - check for commands
-- `smrtr-pkg-missing` / `smrtr-pkg-present` - check for packages
-- `smrtr-pkg-add` - install packages (handles both pacman and AUR)
-- `smrtr-hw-asus-rog` - detect ASUS ROG hardware (and similar `hw-*` commands)
+- `lowr-cmd-missing` / `lowr-cmd-present` - check for commands
+- `lowr-pkg-missing` / `lowr-pkg-present` - check for packages
+- `lowr-pkg-add` - install packages (handles both pacman and AUR)
+- `lowr-hw-asus-rog` - detect ASUS ROG hardware (and similar `hw-*` commands)
 
 # Config Structure
 
@@ -43,25 +43,25 @@ Use these instead of raw shell commands:
 To copy a default config to user config with automatic backup:
 
 ```bash
-smrtr-refresh-config hypr/hyprlock.conf
+lowr-refresh-config hypr/hyprlock.conf
 ```
 
-This copies `~/.local/share/smrtr/config/hypr/hyprlock.conf` to `~/.config/hypr/hyprlock.conf`.
+This copies `~/.local/share/lowr/config/hypr/hyprlock.conf` to `~/.config/hypr/hyprlock.conf`.
 
 # Migrations
 
-To create a new migration, run `smrtr-dev-add-migration --no-edit`. This creates a migration file named after the unix timestamp of the last commit.
+To create a new migration, run `lowr-dev-add-migration --no-edit`. This creates a migration file named after the unix timestamp of the last commit.
 
 Migration format:
 - No shebang line
 - Start with an `echo` describing what the migration does
-- Use `$SMRTR_PATH` to reference the smrtr directory
+- Use `$LOWR_PATH` to reference the lowr directory
 
 Example:
 ```bash
 echo "Disable fingerprint in hyprlock if fingerprint auth is not configured"
 
-if smrtr-cmd-missing fprintd-list || ! fprintd-list "$USER" 2>/dev/null | grep -q "finger"; then
+if lowr-cmd-missing fprintd-list || ! fprintd-list "$USER" 2>/dev/null | grep -q "finger"; then
   sed -i 's/fingerprint:enabled = .*/fingerprint:enabled = false/' ~/.config/hypr/hyprlock.conf
 fi
 ```

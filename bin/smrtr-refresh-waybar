@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# Overwrite the user configs for the Waybar menu bar with the Smrtr defaults and restart the service.
-
-smrtr-refresh-config waybar/config.jsonc
-smrtr-refresh-config waybar/style.css
-smrtr-restart-waybar

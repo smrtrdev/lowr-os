@@ -1,4 +1,4 @@
 # Allow the user to change the branding for fastfetch and screensaver
-mkdir -p ~/.config/smrtr/branding
-cp ~/.local/share/smrtr/icon.txt ~/.config/smrtr/branding/about.txt
-cp ~/.local/share/smrtr/logo.txt ~/.config/smrtr/branding/screensaver.txt
+mkdir -p ~/.config/lowr/branding
+cp ~/.local/share/lowr/icon.txt ~/.config/lowr/branding/about.txt
+cp ~/.local/share/lowr/logo.txt ~/.config/lowr/branding/screensaver.txt

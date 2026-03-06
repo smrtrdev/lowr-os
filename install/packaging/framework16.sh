@@ -1,3 +1,3 @@
-if smrtr-hw-framework16; then
-  smrtr-pkg-add qmk-hid
+if lowr-hw-framework16; then
+  lowr-pkg-add qmk-hid
 fi

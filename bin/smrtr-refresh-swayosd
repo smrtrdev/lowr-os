@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# Overwrite the user configs for swayosd (controls on-screen feedback for changing volume/songs etc) with the Smrtr defaults and restart the service.
-
-smrtr-refresh-config swayosd/config.toml
-smrtr-refresh-config swayosd/style.css
-smrtr-restart-swayosd

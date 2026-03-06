@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Launch the Smrtr audio controls TUI (provided by wiremix).
-
-smrtr-launch-or-focus-tui wiremix

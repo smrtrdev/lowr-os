@@ -2,11 +2,11 @@
 
 # Ensure Walker service is started automatically on boot
 mkdir -p ~/.config/autostart/
-cp $SMRTR_PATH/default/walker/walker.desktop ~/.config/autostart/
+cp $LOWR_PATH/default/walker/walker.desktop ~/.config/autostart/
 
 # And is restarted if it crashes or is killed
 mkdir -p ~/.config/systemd/user/app-walker@autostart.service.d/
-cp $SMRTR_PATH/default/walker/restart.conf ~/.config/systemd/user/app-walker@autostart.service.d/restart.conf
+cp $LOWR_PATH/default/walker/restart.conf ~/.config/systemd/user/app-walker@autostart.service.d/restart.conf
 
 # Create pacman hook to restart walker after updates
 sudo mkdir -p /etc/pacman.d/hooks
@@ -21,10 +21,10 @@ Target = elephant*
 [Action]
 Description = Restarting Walker services after system update
 When = PostTransaction
-Exec = $SMRTR_PATH/bin/smrtr-restart-walker
+Exec = $LOWR_PATH/bin/lowr-restart-walker
 EOF
 
 # Link the visual theme menu config
 mkdir -p ~/.config/elephant/menus
-ln -snf $SMRTR_PATH/default/elephant/smrtr_themes.lua ~/.config/elephant/menus/smrtr_themes.lua
-ln -snf $SMRTR_PATH/default/elephant/smrtr_background_selector.lua ~/.config/elephant/menus/smrtr_background_selector.lua
+ln -snf $LOWR_PATH/default/elephant/lowr_themes.lua ~/.config/elephant/menus/lowr_themes.lua
+ln -snf $LOWR_PATH/default/elephant/lowr_background_selector.lua ~/.config/elephant/menus/lowr_background_selector.lua

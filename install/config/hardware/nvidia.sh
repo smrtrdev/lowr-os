@@ -19,7 +19,7 @@ if [[ -n $NVIDIA ]]; then
     exit 0
   fi
 
-  smrtr-pkg-add "$KERNEL_HEADERS" "${PACKAGES[@]}"
+  lowr-pkg-add "$KERNEL_HEADERS" "${PACKAGES[@]}"
 
   # Configure modprobe for early KMS
   sudo tee /etc/modprobe.d/nvidia.conf <<EOF >/dev/null

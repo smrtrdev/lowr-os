@@ -1,6 +1,6 @@
-# Copy over Smrtr configs
+# Copy over Lowr configs
 mkdir -p ~/.config
-cp -R ~/.local/share/smrtr/config/* ~/.config/
+cp -R ~/.local/share/lowr/config/* ~/.config/
 
-# Use default bashrc from Smrtr
-cp ~/.local/share/smrtr/default/bashrc ~/.bashrc
+# Use default bashrc from Lowr
+cp ~/.local/share/lowr/default/bashrc ~/.bashrc

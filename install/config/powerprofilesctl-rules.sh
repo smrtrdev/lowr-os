@@ -1,5 +1,5 @@
-if smrtr-battery-present; then
-  mapfile -t profiles < <(smrtr-powerprofiles-list)
+if lowr-battery-present; then
+  mapfile -t profiles < <(lowr-powerprofiles-list)
 
   if (( ${#profiles[@]} > 1 )); then
 

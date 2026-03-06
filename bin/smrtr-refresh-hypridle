@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Overwrite the user config for hypridle with the Smrtr default and restart the service.
-
-smrtr-refresh-config hypr/hypridle.conf
-smrtr-restart-hypridle

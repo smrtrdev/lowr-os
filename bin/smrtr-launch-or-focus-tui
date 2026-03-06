@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Launch or focus on a given TUI identified by the passed in as the command.
-# Use by commands like smrtr-launch-wifi to ensure there is only one wifi configuration screen open.
-
-APP_ID="org.smrtr.$(basename "$1")"
-LAUNCH_COMMAND="smrtr-launch-tui $@"
-
-exec smrtr-launch-or-focus "$APP_ID" "$LAUNCH_COMMAND"

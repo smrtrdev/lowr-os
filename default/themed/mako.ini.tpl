@@ -1,4 +1,4 @@
-include=~/.local/share/smrtr/default/mako/core.ini
+include=~/.local/share/lowr/default/mako/core.ini
 
 text-color={{ foreground }}
 border-color={{ accent }}

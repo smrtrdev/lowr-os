@@ -1,3 +1,3 @@
 # Install all base packages
-mapfile -t packages < <(grep -v '^#' "$SMRTR_INSTALL/smrtr-base.packages" | grep -v '^$')
-smrtr-pkg-add "${packages[@]}"
+mapfile -t packages < <(grep -v '^#' "$LOWR_INSTALL/lowr-base.packages" | grep -v '^$')
+lowr-pkg-add "${packages[@]}"

@@ -1,4 +1,4 @@
-/* Smrtr Theme for Obsidian */
+/* Lowr Theme for Obsidian */
 
 .theme-dark, .theme-light {
   /* Core colors */

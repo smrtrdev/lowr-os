@@ -1,5 +1,0 @@
-#!/bin/bash
-set -e
-
-smrtr-launch-floating-terminal-with-presentation "voxtype setup model"
-smrtr-restart-waybar

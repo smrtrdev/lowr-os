@@ -1,4 +1,4 @@
-smrtr-refresh-applications
+lowr-refresh-applications
 update-desktop-database ~/.local/share/applications
 
 # Open directories in file manager

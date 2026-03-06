@@ -1,7 +1,7 @@
 if command -v limine &>/dev/null; then
   sudo pacman -S --noconfirm --needed limine-snapper-sync limine-mkinitcpio-hook
 
-  sudo tee /etc/mkinitcpio.conf.d/smrtr_hooks.conf <<EOF >/dev/null
+  sudo tee /etc/mkinitcpio.conf.d/lowr_hooks.conf <<EOF >/dev/null
 HOOKS=(base udev plymouth keyboard autodetect microcode modconf kms keymap consolefont block encrypt filesystems fsck btrfs-overlayfs)
 EOF
   sudo tee /etc/mkinitcpio.conf.d/thunderbolt_module.conf <<EOF >/dev/null
@@ -29,7 +29,7 @@ EOF
 
   CMDLINE=$(grep "^[[:space:]]*cmdline:" "$limine_config" | head -1 | sed 's/^[[:space:]]*cmdline:[[:space:]]*//')
 
-  sudo cp $SMRTR_PATH/default/limine/default.conf /etc/default/limine
+  sudo cp $LOWR_PATH/default/limine/default.conf /etc/default/limine
   sudo sed -i "s|@@CMDLINE@@|$CMDLINE|g" /etc/default/limine
 
   # UKI and EFI fallback are EFI only
@@ -43,10 +43,10 @@ EOF
   fi
 
   # We overwrite the whole thing knowing the limine-update will add the entries for us
-  sudo cp $SMRTR_PATH/default/limine/limine.conf /boot/limine.conf
+  sudo cp $LOWR_PATH/default/limine/limine.conf /boot/limine.conf
 
   # Match Snapper configs if not installing from the ISO
-  if [[ -z ${SMRTR_CHROOT_INSTALL:-} ]]; then
+  if [[ -z ${LOWR_CHROOT_INSTALL:-} ]]; then
     if ! sudo snapper list-configs 2>/dev/null | grep -q "root"; then
       sudo snapper -c root create-config /
     fi

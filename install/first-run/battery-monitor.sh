@@ -1,8 +1,8 @@
-if smrtr-battery-present; then
+if lowr-battery-present; then
   powerprofilesctl set balanced || true
 
   # Enable battery monitoring timer for low battery notifications
-  systemctl --user enable --now smrtr-battery-monitor.timer
+  systemctl --user enable --now lowr-battery-monitor.timer
 else
   powerprofilesctl set performance || true
 fi

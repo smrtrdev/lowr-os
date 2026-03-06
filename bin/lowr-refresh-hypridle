@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Overwrite the user config for hypridle with the Lowr default and restart the service.
+
+lowr-refresh-config hypr/hypridle.conf
+lowr-restart-hypridle

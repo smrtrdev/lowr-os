@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Overwrite the user config for hyprlock with the Smrtr default.
-
-smrtr-refresh-config hypr/hyprlock.conf

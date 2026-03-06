@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Refresh the SDDM theme from default
+
+sudo rm -rf /usr/share/sddm/themes/lowr
+sudo cp -r $LOWR_PATH/default/sddm/lowr /usr/share/sddm/themes/lowr

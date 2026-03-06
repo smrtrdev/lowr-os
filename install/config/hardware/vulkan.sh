@@ -16,5 +16,5 @@ for vendor in "${!VULKAN_DRIVERS[@]}"; do
 done
 
 if (( ${#PACKAGES[@]} > 0 )); then
-  smrtr-pkg-add "${PACKAGES[@]}"
+  lowr-pkg-add "${PACKAGES[@]}"
 fi

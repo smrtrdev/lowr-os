@@ -1,9 +1,9 @@
-# Smrtr
+# Lowr
 
-Smrtr is a beautiful, modern & opinionated Linux distribution by DHH.
+Lowr is a beautiful, modern & opinionated Linux distribution by DHH.
 
-Read more at [smrtr.org](https://smrtr.org).
+Read more at [lowr.org](https://lowr.org).
 
 ## License
 
-Smrtr is released under the [MIT License](https://opensource.org/licenses/MIT).
+Lowr is released under the [MIT License](https://opensource.org/licenses/MIT).

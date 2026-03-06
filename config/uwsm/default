@@ -7,7 +7,7 @@ export TERMINAL=xdg-terminal-exec
 export EDITOR=nvim
 
 # Use a custom directory for screenshots (remember to make the directory!)
-# export SMRTR_SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
+# export LOWR_SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
 
 # Use a custom directory for screenrecordings (remember to make the directory!)
-# export SMRTR_SCREENRECORD_DIR="$HOME/Videos/Screencasts"
+# export LOWR_SCREENRECORD_DIR="$HOME/Videos/Screencasts"

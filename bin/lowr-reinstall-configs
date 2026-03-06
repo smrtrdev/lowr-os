@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+# Overwrite all user configs with the Lowr defaults.
+
+if (( EUID == 0 )); then
+  echo "Error: This script should not be run as root"
+  exit 1
+fi
+
+echo "Resetting all Lowr configs"
+cp -R ~/.local/share/lowr/config/* ~/.config/
+cp ~/.local/share/lowr/default/bashrc ~/.bashrc
+echo '[[ -f ~/.bashrc ]] && . ~/.bashrc' | tee ~/.bash_profile >/dev/null
+
+$(bash $LOWR_PATH/install/config/theme.sh)
+
+lowr-refresh-limine
+lowr-refresh-plymouth
+omarchy-nvim-setup

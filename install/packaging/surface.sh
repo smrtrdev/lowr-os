@@ -1,3 +1,3 @@
-if smrtr-hw-surface; then
-  smrtr-pkg-add linux-firmware-marvell
+if lowr-hw-surface; then
+  lowr-pkg-add linux-firmware-marvell
 fi

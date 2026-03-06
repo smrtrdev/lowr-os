@@ -3,5 +3,5 @@ export SUDO_EDITOR="$EDITOR"
 export BAT_THEME=ansi
 
 # Duplicated from .config/uwsm/env so SSH works too
-export SMRTR_PATH=$HOME/.local/share/smrtr
-export PATH=$SMRTR_PATH/bin:$PATH:$HOME/.local/bin
+export LOWR_PATH=$HOME/.local/share/lowr
+export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin

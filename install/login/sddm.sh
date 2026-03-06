@@ -1,5 +1,5 @@
-# Install smrtr SDDM theme
-smrtr-refresh-sddm
+# Install lowr SDDM theme
+lowr-refresh-sddm
 
 # Setup SDDM login service
 sudo mkdir -p /etc/sddm.conf.d
@@ -10,7 +10,7 @@ User=$USER
 Session=hyprland-uwsm
 
 [Theme]
-Current=smrtr
+Current=lowr
 EOF
 fi
 

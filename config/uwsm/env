@@ -1,11 +1,11 @@
 # Changes require a restart to take effect.
 
-# Ensure Smrtr bins are in the path
-export SMRTR_PATH=$HOME/.local/share/smrtr
-export PATH=$SMRTR_PATH/bin:$PATH
+# Ensure Lowr bins are in the path
+export LOWR_PATH=$HOME/.local/share/lowr
+export PATH=$LOWR_PATH/bin:$PATH
 
 # Set default terminal and editor
 source ~/.config/uwsm/default
 
 # Activate mise if present on the system
-smrtr-cmd-present mise && eval "$(mise activate bash)"
+lowr-cmd-present mise && eval "$(mise activate bash)"

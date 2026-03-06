@@ -1,7 +1,7 @@
 force_keyboard_focus = true                                                 # forces keyboard forcus to stay in Walker
 selection_wrap = true                                                       # wrap list if at bottom or top
-theme = "smrtr-default"                                                   # theme to use
-additional_theme_location = "~/.local/share/smrtr/default/walker/themes/"
+theme = "lowr-default"                                                   # theme to use
+additional_theme_location = "~/.local/share/lowr/default/walker/themes/"
 hide_action_hints = true                                                    # globally hide the action hints
 
 [placeholders]
@@ -46,4 +46,4 @@ provider = "clipboard"
 
 [[emergencies]]
 text = "Restart Walker"
-command = "smrtr-restart-walker"
+command = "lowr-restart-walker"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Overwrite the user configs for swayosd (controls on-screen feedback for changing volume/songs etc) with the Lowr defaults and restart the service.
+
+lowr-refresh-config swayosd/config.toml
+lowr-refresh-config swayosd/style.css
+lowr-restart-swayosd

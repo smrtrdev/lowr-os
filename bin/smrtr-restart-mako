@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Reload mako configuration (used by the Smrtr theme switching).
-
-makoctl reload

@@ -1,4 +1,4 @@
-source $SMRTR_INSTALL/helpers/chroot.sh
-source $SMRTR_INSTALL/helpers/presentation.sh
-source $SMRTR_INSTALL/helpers/errors.sh
-source $SMRTR_INSTALL/helpers/logging.sh
+source $LOWR_INSTALL/helpers/chroot.sh
+source $LOWR_INSTALL/helpers/presentation.sh
+source $LOWR_INSTALL/helpers/errors.sh
+source $LOWR_INSTALL/helpers/logging.sh
