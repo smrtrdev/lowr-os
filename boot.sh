@@ -4,11 +4,13 @@
 export LOWR_ONLINE_INSTALL=true
 
 ansi_art='
- ▄▄▄▄▄▄▄          ▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄
-█████▀▀▀          ███▀▀███▄ ▀▀▀███▀▀▀
- ▀████▄  ███▄███▄ ███▄▄███▀    ███ ████▄
-   ▀████ ██ ██ ██ ███▀▀██▄     ███ ██ ▀▀
-███████▀ ██ ██ ██ ███  ▀███    ███ ██
+ ▄▄   ▄████▄  ██      ██ ▄▄▄▄▄▄
+ ██  ██▀  ▀██ ▀█  ██  █▀ ██▀▀▀▀██
+ ██  ██    ██  ██▄██▄██  ██    ██
+ ██  ▀██▄▄██▀  ▀██  ██▀  ███████
+ ██    ▀▀▀▀     ▀▀  ▀▀   ██  ▀██▄
+ ██▄▄▄▄▄▄                ██    ██
+ ▀▀▀▀▀▀▀▀                ▀▀    ▀▀▀
 '
 
 clear
@@ -31,8 +33,8 @@ fi
 
 sudo pacman -Syu --noconfirm --needed git
 
-# Use custom repo if specified, otherwise default to lowr/lowr-os
-LOWR_REPO="${LOWR_REPO:-lowr/lowr-os}"
+# Use custom repo if specified, otherwise default to smrtr/lowr-os
+LOWR_REPO="${LOWR_REPO:-smrtr/smrtr-os}"
 
 echo -e "\nCloning Lowr from: https://codeberg.org/${LOWR_REPO}.git"
 rm -rf ~/.local/share/lowr/
