@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Niri reloads config automatically when its config file changes.
+# Keep a stable command entry point for theme/menu hooks.
+
+exit 0

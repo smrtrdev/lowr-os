@@ -18,37 +18,30 @@ fi
 # Silently quit Walker on overlay
 walker -q
 
-focused=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')
 terminal=$(xdg-terminal-exec --print-id)
 
-for m in $(hyprctl monitors -j | jq -r '.[] | .name'); do
-  hyprctl dispatch focusmonitor $m
-
-  case $terminal in
-  *Alacritty*)
-    hyprctl dispatch exec -- \
-      alacritty --class=org.lowr.screensaver \
-      --config-file ~/.local/share/lowr/default/alacritty/screensaver.toml \
-      -e lowr-cmd-screensaver
-    ;;
-  *ghostty*)
-    hyprctl dispatch exec -- \
-      ghostty --class=org.lowr.screensaver \
-      --config-file=~/.local/share/lowr/default/ghostty/screensaver \
-      --font-size=18 \
-      -e lowr-cmd-screensaver
-    ;;
-  *kitty*)
-    hyprctl dispatch exec -- \
-      kitty --class=org.lowr.screensaver \
-      --override font_size=18 \
-      --override window_padding_width=0 \
-      -e lowr-cmd-screensaver
-    ;;
-  *)
-    notify-send "✋  Screensaver only runs in Alacritty, Ghostty, or Kitty"
-    ;;
-  esac
-done
-
-hyprctl dispatch focusmonitor $focused
+case $terminal in
+*Alacritty*)
+  setsid uwsm-app -- \
+    alacritty --class=org.lowr.screensaver \
+    --config-file ~/.local/share/lowr/default/alacritty/screensaver.toml \
+    -e lowr-cmd-screensaver >/dev/null 2>&1 &
+  ;;
+*ghostty*)
+  setsid uwsm-app -- \
+    ghostty --class=org.lowr.screensaver \
+    --config-file=~/.local/share/lowr/default/ghostty/screensaver \
+    --font-size=18 \
+    -e lowr-cmd-screensaver >/dev/null 2>&1 &
+  ;;
+*kitty*)
+  setsid uwsm-app -- \
+    kitty --class=org.lowr.screensaver \
+    --override font_size=18 \
+    --override window_padding_width=0 \
+    -e lowr-cmd-screensaver >/dev/null 2>&1 &
+  ;;
+*)
+  notify-send "✋  Screensaver only runs in Alacritty, Ghostty, or Kitty"
+  ;;
+esac

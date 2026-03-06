@@ -44,7 +44,7 @@ if pgrep -x waybar >/dev/null; then
 fi
 lowr-restart-swayosd
 lowr-restart-terminal
-lowr-restart-hyprctl
+lowr-restart-compositor
 lowr-restart-btop
 lowr-restart-opencode
 lowr-restart-mako

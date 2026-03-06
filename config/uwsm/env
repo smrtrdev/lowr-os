@@ -3,6 +3,9 @@
 # Ensure Lowr bins are in the path
 export LOWR_PATH=$HOME/.local/share/lowr
 export PATH=$LOWR_PATH/bin:$PATH
+export XDG_CURRENT_DESKTOP=niri
+export XDG_SESSION_DESKTOP=niri
+export XDG_SESSION_TYPE=wayland
 
 # Set default terminal and editor
 source ~/.config/uwsm/default

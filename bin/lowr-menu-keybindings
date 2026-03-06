@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Display Hyprland keybindings defined in your configuration using walker for an interactive search menu.
+# Display Niri keybindings defined in your configuration using walker for an interactive search menu.
 
 declare -A KEYCODE_SYM_MAP
 
@@ -76,39 +76,24 @@ parse_keycodes() {
   fi
 }
 
-# Fetch dynamic keybindings from Hyprland
-#
-# Also do some pre-processing:
-# - Remove standard Lowr bin path prefix
-# - Remove uwsm prefix
-# - Map numeric modifier key mask to a textual rendition
-# - Output comma-separated values that the parser can understand
 dynamic_bindings() {
-  hyprctl -j binds |
-    jq -r '.[] | {modmask, key, keycode, description, dispatcher, arg} | "\(.modmask),\(.key)@\(.keycode),\(.description),\(.dispatcher),\(.arg)"' |
-    sed -r \
-      -e 's/null//' \
-      -e 's,~/.local/share/lowr/bin/,,' \
-      -e 's,uwsm app -- ,,' \
-      -e 's,uwsm-app -- ,,' \
-      -e 's/@0//' \
-      -e 's/,@/,code:/' \
-      -e 's/^0,/,/' \
-      -e 's/^1,/SHIFT,/' \
-      -e 's/^4,/CTRL,/' \
-      -e 's/^5,/SHIFT CTRL,/' \
-      -e 's/^8,/ALT,/' \
-      -e 's/^9,/SHIFT ALT,/' \
-      -e 's/^12,/CTRL ALT,/' \
-      -e 's/^13,/SHIFT CTRL ALT,/' \
-      -e 's/^64,/SUPER,/' \
-      -e 's/^65,/SUPER SHIFT,/' \
-      -e 's/^68,/SUPER CTRL,/' \
-      -e 's/^69,/SUPER SHIFT CTRL,/' \
-      -e 's/^72,/SUPER ALT,/' \
-      -e 's/^73,/SUPER SHIFT ALT,/' \
-      -e 's/^76,/SUPER CTRL ALT,/' \
-      -e 's/^77,/SUPER SHIFT CTRL ALT,/'
+  awk '
+    /^\s*[A-Za-z0-9+_-]+/ && /\{.*\}/ {
+      line = $0
+      sub(/^[[:space:]]*/, "", line)
+      split(line, parts, "{")
+      key = parts[1]
+      gsub(/[[:space:]]+$/, "", key)
+
+      action = parts[2]
+      sub(/\}[[:space:]]*$/, "", action)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", action)
+      gsub(/spawn /, "", action)
+      gsub(/"/, "", action)
+
+      print key ",," action
+    }
+  ' ~/.config/niri/config.kdl 2>/dev/null
 }
 
 # Hardcoded bindings, like the copy-url extension and such
@@ -239,9 +224,6 @@ output_keybindings() {
 if [[ $1 == "--print" || $1 == "-p" ]]; then
   output_keybindings
 else
-  monitor_height=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .height')
-  menu_height=$((monitor_height * 40 / 100))
-
   output_keybindings |
-    walker --dmenu -p 'Keybindings' --width 800 --height "$menu_height"
+    walker --dmenu -p 'Keybindings' --width 800 --height 480
 fi

@@ -329,20 +329,8 @@ To stop: lowr-windows-vm stop"
     "" \
     "$LIFECYCLE"
 
-  # Detect display scale from Hyprland
-  HYPR_SCALE=$(hyprctl monitors -j | jq -r '.[] | select (.focused == true) | .scale')
-  SCALE_PERCENT=$(echo "$HYPR_SCALE" | awk '{print int($1 * 100)}')
-
-  RDP_SCALE=""
-  if (( SCALE_PERCENT >= 170 )); then
-    RDP_SCALE="/scale:180"
-  elif (( SCALE_PERCENT >= 130 )); then
-    RDP_SCALE="/scale:140"
-  fi
-  # If scale is less than 130%, don't set any scale (use default 100)
-
   # Connect with RDP in fullscreen (auto-detects resolution)
-  xfreerdp3 /u:"$WIN_USER" /p:"$WIN_PASS" /v:127.0.0.1:3389 -grab-keyboard /sound /microphone /clipboard /cert:ignore /title:"Windows VM - Lowr" /dynamic-resolution /gfx:AVC444 /floatbar:sticky:off,default:visible,show:fullscreen $RDP_SCALE
+  xfreerdp3 /u:"$WIN_USER" /p:"$WIN_PASS" /v:127.0.0.1:3389 -grab-keyboard /sound /microphone /clipboard /cert:ignore /title:"Windows VM - Lowr" /dynamic-resolution /gfx:AVC444 /floatbar:sticky:off,default:visible,show:fullscreen
 
   # After RDP closes, stop the container unless --keep-alive was specified
   if [[ $KEEP_ALIVE = "false" ]]; then

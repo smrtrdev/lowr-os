@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Close all open windows
-hyprctl clients -j | \
-  jq -r ".[].address" | \
-  xargs -I{} hyprctl dispatch closewindow address:{}
+# Compatibility wrapper.
 
-# Move to first workspace
-hyprctl dispatch workspace 1
+lowr-niri-window-close-all

@@ -1,0 +1,104 @@
+// Lowr default Niri configuration.
+// Copy to ~/.config/niri/config.kdl for user overrides.
+
+input {
+  keyboard {
+    xkb {
+      options "compose:caps"
+    }
+
+    repeat-rate 40
+    repeat-delay 600
+    numlock
+  }
+
+  touchpad {
+    natural-scroll
+    tap
+    click-method "clickfinger"
+    scroll-factor 0.4
+  }
+}
+
+layout {
+  gaps 8
+  center-focused-column "never"
+  default-column-width { proportion 0.5; }
+
+  focus-ring {
+    off
+  }
+
+  border {
+    width 1
+    active-color "#33ccff"
+    inactive-color "#595959"
+  }
+
+  shadow {
+    off
+  }
+}
+
+animations {
+  off
+}
+
+prefer-no-csd
+
+spawn-at-startup "uwsm-app" "--" "hypridle"
+spawn-at-startup "uwsm-app" "--" "mako"
+spawn-at-startup "uwsm-app" "--" "waybar"
+spawn-at-startup "uwsm-app" "--" "fcitx5" "--disable" "notificationitem"
+spawn-sh-at-startup "exec uwsm-app -- swaybg -i \"$HOME/.config/lowr/current/background\" -m fill"
+spawn-at-startup "uwsm-app" "--" "swayosd-server"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+spawn-at-startup "lowr-cmd-first-run"
+spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "XDG_SESSION_TYPE" "XDG_SESSION_DESKTOP" "NIRI_SOCKET"
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
+
+binds {
+  Mod+Return { spawn "xdg-terminal-exec"; }
+  Mod+Shift+Return { spawn "lowr-launch-browser"; }
+  Mod+E { spawn "nautilus" "--new-window"; }
+  Mod+Shift+B { spawn "lowr-launch-browser"; }
+  Mod+Shift+M { spawn "lowr-launch-or-focus" "spotify"; }
+  Mod+Shift+N { spawn "lowr-launch-editor"; }
+  Mod+Shift+D { spawn "lowr-launch-tui" "lazydocker"; }
+  Mod+Space { spawn "lowr-launch-walker"; }
+  Mod+Alt+Space { spawn "lowr-menu"; }
+  Mod+Shift+Space { spawn "lowr-toggle-waybar"; }
+  Mod+Shift+Slash { show-hotkey-overlay; }
+
+  Mod+Q { close-window; }
+  Mod+L { focus-column-right; }
+  Mod+H { focus-column-left; }
+  Mod+J { focus-window-down; }
+  Mod+K { focus-window-up; }
+  Mod+Ctrl+L { move-column-right; }
+  Mod+Ctrl+H { move-column-left; }
+  Mod+Ctrl+J { move-window-down; }
+  Mod+Ctrl+K { move-window-up; }
+  Mod+F { fullscreen-window; }
+  Mod+Shift+F { toggle-window-floating; }
+
+  Mod+1 { focus-workspace 1; }
+  Mod+2 { focus-workspace 2; }
+  Mod+3 { focus-workspace 3; }
+  Mod+4 { focus-workspace 4; }
+  Mod+5 { focus-workspace 5; }
+  Mod+Ctrl+1 { move-window-to-workspace 1; }
+  Mod+Ctrl+2 { move-window-to-workspace 2; }
+  Mod+Ctrl+3 { move-window-to-workspace 3; }
+  Mod+Ctrl+4 { move-window-to-workspace 4; }
+  Mod+Ctrl+5 { move-window-to-workspace 5; }
+
+  Mod+Print { spawn "lowr-cmd-screenshot" "smart"; }
+  Print { spawn "lowr-cmd-screenshot" "fullscreen"; }
+  Mod+Shift+R { spawn "lowr-cmd-screenrecord"; }
+  Mod+Alt+R { spawn "lowr-cmd-screenrecord" "--stop-recording"; }
+
+  Mod+Alt+L { spawn "lowr-lock-screen"; }
+  Mod+Ctrl+N { spawn "lowr-toggle-nightlight"; }
+  Mod+Ctrl+I { spawn "lowr-toggle-idle"; }
+}

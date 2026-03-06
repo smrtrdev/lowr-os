@@ -47,11 +47,8 @@ gvfs-mtp
 gvfs-nfs
 gvfs-smb
 hypridle
-hyprland
-hyprland-guiutils
-hyprland-preview-share-picker
+niri
 hyprlock
-hyprpicker
 hyprsunset
 imagemagick
 impala
@@ -131,8 +128,9 @@ wiremix
 wireplumber
 wl-clipboard
 woff2-font-awesome
+xwayland-satellite
 xdg-desktop-portal-gtk
-xdg-desktop-portal-hyprland
+xdg-desktop-portal-gnome
 xdg-terminal-exec
 xmlstarlet
 yaru-icon-theme

@@ -44,11 +44,7 @@ start_webcam_overlay() {
     fi
   fi
 
-  # Get monitor scale
-  local scale=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .scale')
-
-  # Target width (base 360px, scaled to monitor)
-  local target_width=$(awk "BEGIN {printf \"%.0f\", 360 * $scale}")
+  local target_width=360
 
   # Try preferred 16:9 resolutions in order, use first available
   local preferred_resolutions=("640x360" "1280x720" "1920x1080")
@@ -77,13 +73,7 @@ cleanup_webcam() {
 }
 
 default_resolution() {
-  local width height
-  read -r width height < <(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | "\(.width) \(.height)"')
-  if ((width > 3840 || height > 2160)); then
-    echo "3840x2160"
-  else
-    echo "0x0"
-  fi
+  echo "0x0"
 }
 
 start_screenrecording() {

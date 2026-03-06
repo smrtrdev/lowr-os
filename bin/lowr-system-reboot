@@ -9,5 +9,5 @@ lowr-state clear re*-required
 nohup bash -c "sleep 2 && systemctl reboot --no-wall" >/dev/null 2>&1 &
 
 # Now close all windows
-lowr-hyprland-window-close-all
+lowr-niri-window-close-all
 sleep 1 # Allow apps like Chrome to shutdown correctly

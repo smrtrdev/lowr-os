@@ -10,9 +10,9 @@ if [[ -z $config_file ]]; then
   Usage: $0 [config_file]
 
   Must provide a file path from the .config directory to be refreshed.
-  To copy ~/.local/share/lowr/config/hypr/hyprlock.conf to ~/.config/hypr/hyprlock.conf
+  To copy ~/.local/share/lowr/config/niri/config.kdl to ~/.config/niri/config.kdl
 
-    $0 hypr/hyprlock.conf
+    $0 niri/config.kdl
 USAGE
   exit 1
 fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Overwrite the user config for Niri with the Lowr default.
+
+lowr-refresh-config niri/config.kdl

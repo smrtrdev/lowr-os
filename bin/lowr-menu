@@ -76,10 +76,10 @@ aur_install_and_launch() {
 }
 
 show_learn_menu() {
-  case $(menu "Learn" "  Keybindings\n  Lowr\n  Hyprland\n󰣇  Arch\n  Neovim\n󱆃  Bash") in
+  case $(menu "Learn" "  Keybindings\n  Lowr\n  Niri\n󰣇  Arch\n  Neovim\n󱆃  Bash") in
   *Keybindings*) lowr-menu-keybindings ;;
   *Lowr*) lowr-launch-webapp "https://learn.omacom.io/2/the-lowr-manual" ;;
-  *Hyprland*) lowr-launch-webapp "https://wiki.hypr.land/" ;;
+  *Niri*) lowr-launch-webapp "https://github.com/YaLTeR/niri/wiki" ;;
   *Arch*) lowr-launch-webapp "https://wiki.archlinux.org/title/Main_page" ;;
   *Bash*) lowr-launch-webapp "https://devhints.io/bash" ;;
   *Neovim*) lowr-launch-webapp "https://www.lazyvim.org/keymaps" ;;
@@ -98,10 +98,9 @@ show_trigger_menu() {
 }
 
 show_capture_menu() {
-  case $(menu "Capture" "  Screenshot\n  Screenrecord\n󰃉  Color") in
+  case $(menu "Capture" "  Screenshot\n  Screenrecord") in
   *Screenshot*) lowr-cmd-screenshot ;;
   *Screenrecord*) show_screenrecord_menu ;;
-  *Color*) pkill hyprpicker || hyprpicker -a ;;
   *) back_to show_trigger_menu ;;
   esac
 }
@@ -161,16 +160,12 @@ show_share_menu() {
 }
 
 show_toggle_menu() {
-  case $(menu "Toggle" "󱄄  Screensaver\n󰔎  Nightlight\n󱫖  Idle Lock\n󰍜  Top Bar\n󱂬  Workspace Layout\n  Window Gaps\n  1-Window Ratio\n󰍹  Display Scaling") in
+  case $(menu "Toggle" "󱄄  Screensaver\n󰔎  Nightlight\n󱫖  Idle Lock\n󰍜  Top Bar") in
 
   *Screensaver*) lowr-toggle-screensaver ;;
   *Nightlight*) lowr-toggle-nightlight ;;
   *Idle*) lowr-toggle-idle ;;
   *Bar*) lowr-toggle-waybar ;;
-  *Layout*) lowr-hyprland-workspace-layout-toggle ;;
-  *Ratio*) lowr-hyprland-window-single-square-aspect-toggle ;;
-  *Gaps*) lowr-hyprland-window-gaps-toggle ;;
-  *Scaling*) lowr-hyprland-monitor-scaling-cycle ;;
   *) back_to show_trigger_menu ;;
   esac
 }
@@ -183,11 +178,11 @@ show_hardware_menu() {
 }
 
 show_style_menu() {
-  case $(menu "Style" "󰸌  Theme\n  Font\n  Background\n  Hyprland\n󱄄  Screensaver\n  About") in
+  case $(menu "Style" "󰸌  Theme\n  Font\n  Background\n  Niri\n󱄄  Screensaver\n  About") in
   *Theme*) show_theme_menu ;;
   *Font*) show_font_menu ;;
   *Background*) show_background_menu ;;
-  *Hyprland*) open_in_editor ~/.config/hypr/looknfeel.conf ;;
+  *Niri*) open_in_editor ~/.config/niri/config.kdl ;;
   *Screensaver*) open_in_editor ~/.config/lowr/branding/screensaver.txt ;;
   *About*) open_in_editor ~/.config/lowr/branding/about.txt ;;
   *) show_main_menu ;;
@@ -213,8 +208,7 @@ show_font_menu() {
 
 show_setup_menu() {
   local options="  Audio\n  Wifi\n󰂯  Bluetooth\n󱐋  Power Profile\n  System Sleep\n󰍹  Monitors"
-  [[ -f ~/.config/hypr/bindings.conf ]] && options="$options\n  Keybindings"
-  [[ -f ~/.config/hypr/input.conf ]] && options="$options\n  Input"
+  [[ -f ~/.config/niri/config.kdl ]] && options="$options\n  Keybindings\n  Input"
   options="$options\n󰱔  DNS\n  Security\n  Config"
 
   case $(menu "Setup" "$options") in
@@ -223,9 +217,9 @@ show_setup_menu() {
   *Bluetooth*) lowr-launch-bluetooth ;;
   *Power*) show_setup_power_menu ;;
   *System*) show_setup_system_menu ;;
-  *Monitors*) open_in_editor ~/.config/hypr/monitors.conf ;;
-  *Keybindings*) open_in_editor ~/.config/hypr/bindings.conf ;;
-  *Input*) open_in_editor ~/.config/hypr/input.conf ;;
+  *Monitors*) open_in_editor ~/.config/niri/config.kdl ;;
+  *Keybindings*) open_in_editor ~/.config/niri/config.kdl ;;
+  *Input*) open_in_editor ~/.config/niri/config.kdl ;;
   *DNS*) present_terminal lowr-setup-dns ;;
   *Security*) show_setup_security_menu ;;
   *Config*) show_setup_config_menu ;;
@@ -252,9 +246,9 @@ show_setup_security_menu() {
 }
 
 show_setup_config_menu() {
-  case $(menu "Setup" "  Defaults\n  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar\n󰞅  XCompose") in
+  case $(menu "Setup" "  Defaults\n  Niri\n  Hypridle\n  Hyprlock\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar\n󰞅  XCompose") in
   *Defaults*) open_in_editor ~/.config/uwsm/default ;;
-  *Hyprland*) open_in_editor ~/.config/hypr/hyprland.conf ;;
+  *Niri*) open_in_editor ~/.config/niri/config.kdl && lowr-restart-compositor ;;
   *Hypridle*) open_in_editor ~/.config/hypr/hypridle.conf && lowr-restart-hypridle ;;
   *Hyprlock*) open_in_editor ~/.config/hypr/hyprlock.conf ;;
   *Hyprsunset*) open_in_editor ~/.config/hypr/hyprsunset.conf && lowr-restart-hyprsunset ;;
@@ -525,7 +519,8 @@ show_update_channel_menu() {
   esac
 }
 show_update_process_menu() {
-  case $(menu "Restart" "  Hypridle\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
+  case $(menu "Restart" "  Niri\n  Hypridle\n  Hyprsunset\n  Swayosd\n󰌧  Walker\n󰍜  Waybar") in
+  *Niri*) lowr-restart-compositor ;;
   *Hypridle*) lowr-restart-hypridle ;;
   *Hyprsunset*) lowr-restart-hyprsunset ;;
   *Swayosd*) lowr-restart-swayosd ;;
@@ -536,8 +531,8 @@ show_update_process_menu() {
 }
 
 show_update_config_menu() {
-  case $(menu "Use default config" "  Hyprland\n  Hypridle\n  Hyprlock\n  Hyprsunset\n󱣴  Plymouth\n  Swayosd\n  Tmux\n󰌧  Walker\n󰍜  Waybar") in
-  *Hyprland*) present_terminal lowr-refresh-hyprland ;;
+  case $(menu "Use default config" "  Niri\n  Hypridle\n  Hyprlock\n  Hyprsunset\n󱣴  Plymouth\n  Swayosd\n  Tmux\n󰌧  Walker\n󰍜  Waybar") in
+  *Niri*) present_terminal lowr-refresh-niri ;;
   *Hypridle*) present_terminal lowr-refresh-hypridle ;;
   *Hyprlock*) present_terminal lowr-refresh-hyprlock ;;
   *Hyprsunset*) present_terminal lowr-refresh-hyprsunset ;;
