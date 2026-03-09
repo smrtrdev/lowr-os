@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Install the WinBoat windows on docker.
+
+echo "Installing WinBoat ..."
+lowr-pkg-aur-add winboat-bin
+
+echo -e "\nWinBoat installed!"
