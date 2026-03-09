@@ -141,40 +141,6 @@ def --env lowr-init-starship [] {
   )
 }
 
-def lowr-carapace-completer [spans: list<string>] {
-  if ($spans | is-empty) {
-    return []
-  }
-
-  let alias_expansion = (
-    scope aliases
-    | where name == ($spans | get 0)
-    | get --optional 0.expansion
-  )
-
-  let carapace_spans = if $alias_expansion == null {
-    $spans
-  } else {
-    let expanded = ($alias_expansion | split row " ")
-    $spans | skip 1 | prepend ($expanded | get 0)
-  }
-
-  ^carapace ($carapace_spans | get 0) nushell ...$carapace_spans | from json
-}
-
-def --env lowr-init-carapace [] {
-  $env.CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense"
-  $env.config = (
-    $env.config?
-    | default {}
-    | upsert completions { default {} }
-    | upsert completions.external { default {} }
-    | upsert completions.external.enable true
-    | upsert completions.external.max_results 100
-    | upsert completions.external.completer {|spans| lowr-carapace-completer $spans}
-  )
-}
-
 if (lowr-command-present "mise") {
   lowr-init-mise
 }
