@@ -40,10 +40,10 @@
     }
   },
   "custom/lowr": {
-    "format": "<span font='lowr'>\ue900</span>",
+    "format": "⌄",
     "on-click": "lowr-menu",
     "on-click-right": "xdg-terminal-exec",
-    "tooltip-format": "lowr Menu\n\nSuper + Alt + Space"
+    "tooltip-format": "LowR Menu\n\nSuper + Alt + Space"
   },
   "custom/update": {
     "format": "",
