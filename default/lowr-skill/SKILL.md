@@ -134,7 +134,7 @@ cat $(which lowr-theme-set)
 **Key behaviors:**
 - Hyprland auto-reloads on config save (no restart needed for most changes)
 - Use `hyprctl reload` to force reload
-- Use `lowr-refresh-hyprland` to reset to defaults
+- Use `lowr-refresh-niri` to reset to defaults
 
 ### Waybar (Status Bar)
 
@@ -225,7 +225,7 @@ When customizations go wrong:
 ```bash
 # Reset specific config (creates backup automatically)
 lowr-refresh-waybar
-lowr-refresh-hyprland
+lowr-refresh-niri
 
 # The refresh command:
 # 1. Backs up current config with timestamp

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Compatibility wrapper for the old compositor refresh command.
-
-lowr-refresh-niri
