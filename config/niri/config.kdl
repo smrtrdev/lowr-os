@@ -87,8 +87,8 @@ binds {
   Mod+Shift+B { spawn "lowr-launch-browser"; }
   Mod+Shift+A { spawn "lowr-launch-editor"; }
   Mod+Shift+D { spawn "lowr-launch-tui" "lazydocker"; }
-  Mod+Space { spawn "lowr-launch-walker"; }
-  Mod+Alt+Space { spawn "lowr-menu"; }
+  Mod+Shift+O { spawn "lowr-launch-or-focus" "^obsidian$" "uwsm-app -- obsidian -disable-gpu --enable-wayland-ime"; }
+
   Mod+Shift+Space { spawn "lowr-toggle-waybar"; }
   Mod+Shift+Slash { show-hotkey-overlay; }
 
@@ -160,7 +160,7 @@ binds {
   Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
   Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
 
-  // Screenshots
+  // Capture
   Print { screenshot; }
   Mod+Print { screenshot-screen; }
   Mod+Shift+Print { screenshot-window; }
@@ -170,7 +170,34 @@ binds {
   Mod+Shift+Y { spawn "lowr-cmd-screenrecord"; }
   Mod+Alt+Y { spawn "lowr-cmd-screenrecord" "--stop-recording"; }
 
-  Mod+Alt+J { spawn "lowr-lock-screen"; }
+
+  // Lock
+  Mod+J { spawn "lowr-lock-screen"; }
   Mod+Ctrl+Z { spawn "lowr-toggle-nightlight"; }
   Mod+Ctrl+I { spawn "lowr-toggle-idle"; }
+
+  // Menus
+  Mod+K { spawn "lowr-menu-keybindings"; }
+  Mod+Ctrl+C { spawn "lowr-menu" "capture"; }
+  Mod+Space { spawn "lowr-launch-walker"; }
+  Mod+Alt+Space { spawn "lowr-menu"; }
+  Mod+adiaeresis { spawn "lowr-launch-walker"; }
+  Mod+udiaeresis { spawn "lowr-menu"; }
+  Mod+Escape { spawn "lowr-menu" "system"; }
+
+  // Notifications
+  Mod+Comma { spawn "lowr-notification-dismiss"; }
+
+  // Media keys
+  XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05+"; }
+  XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05-"; }
+  XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+  XF86AudioMicMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+  XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%"; }
+  XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+  XF86AudioPlay { spawn "playerctl" "play-pause"; }
+  XF86AudioNext { spawn "playerctl" "next"; }
+  XF86AudioPrev { spawn "playerctl" "previous"; }
+
+  Mod+Shift+E { quit; }
 }
