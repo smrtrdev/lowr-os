@@ -1,9 +1,9 @@
 [Unit]
-Description=Omarchy Battery Monitor Check
+Description=LowR Battery Monitor Check
 After=graphical-session.target
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/share/omarchy/bin/omarchy-battery-monitor
+ExecStart=%h/.local/share/lowr/bin/lowr-battery-monitor
 Environment=DISPLAY=:0
 LogLevelMax=warning

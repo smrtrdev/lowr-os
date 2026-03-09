@@ -1,11 +1,11 @@
 [Plymouth Theme]
-Name=Omarchy
-Description=Omarchy splash screen.
+Name=LowR
+Description=LowR splash screen.
 ModuleName=script
 
 [script]
-ImageDir=/usr/share/plymouth/themes/omarchy
-ScriptFile=/usr/share/plymouth/themes/omarchy/omarchy.script
+ImageDir=/usr/share/plymouth/themes/lowr
+ScriptFile=/usr/share/plymouth/themes/lowr/lowr.script
 ConsoleLogBackgroundColor=0x1a1b26
 MonospaceFont=Cantarell 11
 Font=Cantarell 11
