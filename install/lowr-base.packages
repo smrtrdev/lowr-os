@@ -48,6 +48,7 @@ gvfs-nfs
 gvfs-smb
 hypridle
 niri
+nushell
 hyprlock
 hyprsunset
 imagemagick
@@ -135,4 +136,5 @@ xdg-terminal-exec
 xmlstarlet
 yaru-icon-theme
 yay
+zellij
 zoxide
