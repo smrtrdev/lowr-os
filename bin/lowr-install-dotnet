@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Install the Dotnet.
+
+echo "Installing Dotnet..."
+
+dotnet-install --version latest
+
+echo -e "\nZen Browser installed!"
