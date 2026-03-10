@@ -5,6 +5,8 @@ let local_bin = ($env.HOME | path join ".local" "bin")
 $env.LOWR_PATH = $lowr_path
 $env.BAT_THEME = "ansi"
 
+$env.SSH_AUTH_SOCK = $"($env.XDG_RUNTIME_DIR)/ssh-agent.socket"
+
 if "EDITOR" in $env {
   $env.SUDO_EDITOR = $env.EDITOR
 }
