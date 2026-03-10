@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo
+
+if [[ ! -d /usr/lib/modules/$(uname -r) ]]; then
+  gum confirm "Linux kernel has been updated. Reboot?" && lowr-system-reboot
+elif [[ -f $HOME/.local/state/lowr/reboot-required ]]; then
+  gum confirm "Updates require reboot. Ready?" && lowr-system-reboot
+fi
+
+running_niri=$(readlink /proc/$(pgrep -x niri)/exe 2>/dev/null)
+if [[ $running_niri == *"(deleted)"* ]]; then
+  gum confirm "Niri has been updated. Reboot?" && lowr-system-reboot
+fi
+
+for file in "$HOME"/.local/state/lowr/restart-*-required; do
+  if [[ -f $file ]]; then
+    filename=$(basename "$file")
+    service=$(echo "$filename" | sed 's/restart-\(.*\)-required/\1/')
+    echo "Restarting $service"
+    lowr-state clear "$filename"
+    lowr-restart-"$service"
+  fi
+done

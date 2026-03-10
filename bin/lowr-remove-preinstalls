@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Remove preinstalled Lowr applications (web apps, TUIs, and selected packages).
+# This removes all web apps, TUIs, plus specific desktop applications.
+
+if gum confirm "Are you sure you want to remove all preinstalled web apps, TUI wrappers, and desktop applications?"; then
+  echo -e "Removing preinstalled Lowr applications...\n"
+
+  lowr-webapp-remove-all
+  lowr-tui-remove-all
+
+  cp ~/.config/niri/config.kdl ~/.config/niri/config.kdl.bak
+  cp "$LOWR_PATH/config/niri/config.kdl" ~/.config/niri/config.kdl
+  lowr-restart-compositor
+
+  lowr-pkg-drop \
+    aether \
+    spotify \
+    libreoffice-fresh \
+    obsidian \
+    lazydocker \
+    opencode \
+    claude-code
+fi

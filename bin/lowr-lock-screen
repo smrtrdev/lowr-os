@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Locks the system using hyprlock, but not before ensuring 1password has also been locked, and the screensaver stopped.
+
+# Lock the screen
+pidof hyprlock || hyprlock &
+
+# Ensure 1password is locked
+# if pgrep -x "1password" >/dev/null; then
+#   1password --lock &
+# fi
+
+# Avoid running screensaver when locked
+pkill -f org.lowr.screensaver

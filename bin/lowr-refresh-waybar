@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Overwrite the user configs for the Waybar menu bar with the Lowr defaults and restart the service.
+
+lowr-refresh-config waybar/config.jsonc
+lowr-refresh-config waybar/style.css
+lowr-restart-waybar

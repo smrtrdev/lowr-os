@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [[ -z $1 ]]; then
+  echo "Usage: lowr-theme-set <theme-name>"
+  exit 1
+fi
+
+CURRENT_THEME_PATH="$HOME/.config/lowr/current/theme"
+NEXT_THEME_PATH="$HOME/.config/lowr/current/next-theme"
+USER_THEMES_PATH="$HOME/.config/lowr/themes"
+LOWR_THEMES_PATH="$LOWR_PATH/themes"
+
+THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+if [[ ! -d $LOWR_THEMES_PATH/$THEME_NAME ]] && [[ ! -d $USER_THEMES_PATH/$THEME_NAME ]]; then
+  echo "Theme '$THEME_NAME' does not exist"
+  exit 1
+fi
+
+# Setup clean next theme directory (for atomic theme config swapping)
+rm -rf "$NEXT_THEME_PATH"
+mkdir -p "$NEXT_THEME_PATH"
+
+# Copy official theme first, then overlay user customizations on top
+cp -r "$LOWR_THEMES_PATH/$THEME_NAME/"* "$NEXT_THEME_PATH/" 2>/dev/null
+cp -r "$USER_THEMES_PATH/$THEME_NAME/"* "$NEXT_THEME_PATH/" 2>/dev/null
+
+# Generate dynamic configs
+lowr-theme-set-templates
+
+# Swap next theme in as current
+rm -rf "$CURRENT_THEME_PATH"
+mv "$NEXT_THEME_PATH" "$CURRENT_THEME_PATH"
+
+# Store theme name for reference
+echo "$THEME_NAME" >"$HOME/.config/lowr/current/theme.name"
+
+# Change background with theme
+lowr-theme-bg-next
+
+# Restart components to apply new theme
+if pgrep -x waybar >/dev/null; then
+  lowr-restart-waybar
+fi
+lowr-restart-swayosd
+lowr-restart-terminal
+lowr-restart-compositor
+lowr-restart-btop
+lowr-restart-opencode
+lowr-restart-mako
+
+# Change app-specific themes
+lowr-theme-set-gnome
+lowr-theme-set-browser
+lowr-theme-set-vscode
+lowr-theme-set-obsidian
+lowr-theme-set-keyboard
+
+# Call hook on theme set
+lowr-hook theme-set "$THEME_NAME"

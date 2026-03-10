@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Install the Zen Browser.
+
+echo "Installing Zen Browser..."
+lowr-pkg-aur-add zen-browser-bin
+
+echo -e "\nZen Browser installed!"

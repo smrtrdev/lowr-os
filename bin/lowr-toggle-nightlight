@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if pgrep -x hyprsunset >/dev/null; then
+  pkill -x hyprsunset
+  notify-send "   Daylight screen temperature"
+else
+  setsid uwsm-app -- hyprsunset >/dev/null 2>&1 &
+  notify-send "  Nightlight enabled"
+fi

@@ -1,45 +1,35 @@
-# smrtr-os nushell configuration
-
 $env.config = {
-    show_banner: false
-    edit_mode: emacs
-    cursor_shape: {
-        emacs: line
-        vi_insert: line
-        vi_normal: block
+  show_banner: false
+  edit_mode: emacs
+  cursor_shape: {
+    emacs: line
+    vi_insert: line
+    vi_normal: block
+  }
+  completions: {
+    quick: true
+    partial: true
+    external: {
+      enable: true
+      max_results: 100
+      completer: null
     }
-    keybindings: [
-        {
-            name: fuzzy_history
-            modifier: control
-            keycode: char_r
-            mode: [emacs vi_insert]
-            event: {
-                send: executehostcommand
-                cmd: "commandline edit --replace (history | each { |it| $it.command } | uniq | reverse | str join (char newline) | fzf --height=40% | str trim)"
-            }
-        }
-        {
-            name: fuzzy_file
-            modifier: control
-            keycode: char_t
-            mode: [emacs vi_insert]
-            event: {
-                send: executehostcommand
-                cmd: "commandline edit --insert (fd --type f --hidden --follow --exclude .git | fzf --height=40% | str trim)"
-            }
-        }
-    ]
+  }
+  show_hints: true
+  history: {
+    max_size: 100000
+    sync_on_enter: true
+  }
+  hooks: {
+    pre_prompt: []
+    env_change: {}
+  }
+  render_right_prompt_on_last_line: false
 }
 
-# Source aliases
-source ~/.config/nushell/aliases.nu
+source ~/.local/share/lowr/default/nushell/config.nu
+use aliases.nu *
 
-# Source cached integrations
-use ~/.cache/starship/init.nu
-source ~/.cache/zoxide/init.nu
-source ~/.cache/carapace/init.nu
-source ~/.cache/mise/init.nu
 
-# Carapace bridge
-$env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
+
+# Add user-specific Nushell configuration below.

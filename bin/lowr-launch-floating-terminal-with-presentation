@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Launch a floating terminal with the Lowr logo presentation, then execute the command passed in, and finally end with the lowr-show-done presentation.
+# Used by actions such as Update System.
+
+cmd="$*"
+exec setsid uwsm-app -- xdg-terminal-exec --app-id=org.lowr.terminal --title=Lowr -e bash -c "lowr-show-logo; $cmd; if (( \$? != 130 )); then lowr-show-done; fi"

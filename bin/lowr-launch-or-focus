@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Launch or focus on a given command identified by the passed in window-pattern.
+# Use by some default bindings, like the one for Spotify, to ensure there is only one instance of the application open.
+
+if (($# == 0)); then
+  echo "Usage: lowr-launch-or-focus [window-pattern] [launch-command]"
+  exit 1
+fi
+
+WINDOW_PATTERN="$1"
+LAUNCH_COMMAND="${2:-"uwsm-app -- $WINDOW_PATTERN"}"
+WINDOW_ID=$(niri msg -j windows 2>/dev/null | jq -r --arg p "$WINDOW_PATTERN" '.[] | select(((.app_id // "") | test($p; "i")) or ((.title // "") | test($p; "i"))) | .id' | head -n1)
+
+if [[ -n $WINDOW_ID ]]; then
+  niri msg action focus-window --id "$WINDOW_ID"
+else
+  eval exec setsid $LAUNCH_COMMAND
+fi

@@ -1,32 +1,49 @@
-[search]
-placeholder = "Search..."
-delay = 0
-force_keyboard_focus = true
+force_keyboard_focus = true                                                 # forces keyboard forcus to stay in Walker
+selection_wrap = true                                                       # wrap list if at bottom or top
+theme = "lowr-default"                                                   # theme to use
+additional_theme_location = "~/.local/share/lowr/default/walker/themes/"
+hide_action_hints = true                                                    # globally hide the action hints
 
-[ui]
-fullscreen = false
-anchors = { top = true, bottom = false, left = false, right = false }
+[placeholders]
+"default" = { input = " Search...", list = "No Results" } # placeholders for input and empty list, key is the providers name, so f.e. "desktopapplications" or "menus:other"
 
-[ui.window]
-width = 600
-height = 400
+[keybinds]
+quick_activate = []
 
-[builtins.applications]
-enabled = true
-prioritize_new = true
+[columns]
+symbols = 1 # providers to be queried by default
 
-[builtins.commands]
-enabled = true
+[providers]
+max_results = 256 # 256 should be enough for everyone
+default = [
+  "desktopapplications",
+  "websearch",
+]
 
-[builtins.files]
-enabled = true
+[[providers.prefixes]]
+prefix = "/"
+provider = "providerlist"
 
-[builtins.dmenu]
-enabled = true
+[[providers.prefixes]]
+prefix = "."
+provider = "files"
 
-[terminal_emulator]
-program = "ghostty"
-flag = "-e"
+[[providers.prefixes]]
+prefix = ":"
+provider = "symbols"
 
-[theme]
-name = "catppuccin"
+[[providers.prefixes]]
+prefix = "="
+provider = "calc"
+
+[[providers.prefixes]]
+prefix = "@"
+provider = "websearch"
+
+[[providers.prefixes]]
+prefix = "$"
+provider = "clipboard"
+
+[[emergencies]]
+text = "Restart Walker"
+command = "lowr-restart-walker"

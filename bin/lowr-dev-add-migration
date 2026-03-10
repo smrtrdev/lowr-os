@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Creates a new Lowr migration named after the unix timestamp of the last commit.
+# Only intended for Lowr developers.
+
+cd ~/.local/share/lowr
+migration_file="$HOME/.local/share/lowr/migrations/$(git log -1 --format=%cd --date=unix).sh"
+touch $migration_file
+
+if [[ $1 != "--no-edit" ]]; then
+  nvim $migration_file
+fi
+
+echo $migration_file

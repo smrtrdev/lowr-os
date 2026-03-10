@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+echo -e "\e[32mUpdate Lowr\e[0m"
+
+git -C $LOWR_PATH pull --autostash
+git -C $LOWR_PATH --no-pager diff --check || git -C $LOWR_PATH reset --merge

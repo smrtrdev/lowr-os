@@ -1,7 +1,5 @@
-log_step "Running login scripts..."
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-log_step "manager"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-bash "$SMRTR_INSTALL/login/manager.sh"
+run_logged $LOWR_INSTALL/login/plymouth.sh
+run_logged $LOWR_INSTALL/login/default-keyring.sh
+run_logged $LOWR_INSTALL/login/niri-uwsm-session.sh
+run_logged $LOWR_INSTALL/login/sddm.sh
+run_logged $LOWR_INSTALL/login/limine-snapper.sh

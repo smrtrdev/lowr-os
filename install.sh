@@ -1,12 +1,18 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
 
-export SMRTR_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export SMRTR_INSTALL="$SMRTR_PATH/install"
+# Exit immediately if a command exits with a non-zero status
+set -eEo pipefail
 
-source "$SMRTR_INSTALL/helpers/all.sh"
-source "$SMRTR_INSTALL/preflight/all.sh"
-source "$SMRTR_INSTALL/packaging/all.sh"
-source "$SMRTR_INSTALL/config/all.sh"
-source "$SMRTR_INSTALL/login/all.sh"
-source "$SMRTR_INSTALL/post-install/all.sh"
+# Define Lowr locations
+export LOWR_PATH="$HOME/.local/share/lowr"
+export LOWR_INSTALL="$LOWR_PATH/install"
+export LOWR_INSTALL_LOG_FILE="/var/log/lowr-install.log"
+export PATH="$LOWR_PATH/bin:$PATH"
+
+# Install
+source "$LOWR_INSTALL/helpers/all.sh"
+source "$LOWR_INSTALL/preflight/all.sh"
+source "$LOWR_INSTALL/packaging/all.sh"
+source "$LOWR_INSTALL/config/all.sh"
+source "$LOWR_INSTALL/login/all.sh"
+source "$LOWR_INSTALL/post-install/all.sh"

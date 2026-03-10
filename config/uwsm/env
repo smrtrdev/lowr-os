@@ -1,4 +1,14 @@
 # Changes require a restart to take effect.
 
-# Ensure user-local launchers are available to compositor keybind spawns.
-export PATH=$HOME/.local/bin:$PATH
+# Ensure Lowr bins are in the path
+export LOWR_PATH=$HOME/.local/share/lowr
+export PATH=$LOWR_PATH/bin:$PATH
+export XDG_CURRENT_DESKTOP=niri
+export XDG_SESSION_DESKTOP=niri
+export XDG_SESSION_TYPE=wayland
+
+# Set default terminal and editor
+source ~/.config/uwsm/default
+
+# Activate mise if present on the system
+lowr-cmd-present mise && eval "$(mise activate bash)"

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+lowr-launch-floating-terminal-with-presentation "voxtype setup model"
+lowr-restart-waybar
