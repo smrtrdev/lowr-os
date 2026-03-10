@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ $(niri msg -j outputs | jq -r '."eDP-1".current_mode') == "null" ]]; then
+	lowr-enable-notebook-monitor
+else
+	lowr-disable-notebook-monitor
+fi

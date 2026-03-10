@@ -91,6 +91,7 @@ binds {
   Mod+Shift+O { spawn "lowr-launch-or-focus" "^obsidian$" "uwsm-app -- obsidian -disable-gpu --enable-wayland-ime"; }
 
   Mod+Shift+Space { spawn "lowr-toggle-waybar"; }
+  Mod+Alt+P { spawn "lowr-toggle-notebook-monitor"; }
   Mod+Shift+Slash { show-hotkey-overlay; }
 
 
