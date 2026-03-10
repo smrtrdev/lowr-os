@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -euo pipefail
+
+app_dir="$HOME/applications"
+app_image_path="$app_dir/Vial.AppImage"
+desktop_dir="$HOME/.local/share/applications"
+icon_dir="$desktop_dir/icons"
+icon_source="$HOME/.local/share/lowr/applications/icons/Vial.png"
+icon_target="$icon_dir/Vial.png"
+desktop_file="$desktop_dir/Vial.desktop"
+download_url="https://github.com/vial-kb/vial-gui/releases/download/v0.7.5/Vial-v0.7.5-x86_64.AppImage"
+
+mkdir -p "$app_dir"
+mkdir -p "$icon_dir"
+
+if [[ ! -f "$icon_source" ]]; then
+  echo "Vial icon not found: $icon_source" >&2
+  exit 1
+fi
+
+echo "Downloading Vial AppImage..."
+curl -L --fail --output "$app_image_path" "$download_url"
+
+echo "Making AppImage executable..."
+chmod +x "$app_image_path"
+
+echo "Installing Vial icon..."
+cp "$icon_source" "$icon_target"
+
+echo "Creating desktop entry..."
+cat > "$desktop_file" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Vial
+Comment=Keyboard configurator
+Exec=$app_image_path
+Icon=$icon_target
+Terminal=false
+Categories=Utility;
+StartupNotify=true
+EOF
+
+echo "Setting up Vial udev rule..."
+USER_GID=$(id -g)
+export USER_GID
+sudo --preserve-env=USER_GID sh -c 'echo "KERNEL==\"hidraw*\", SUBSYSTEM==\"hidraw\", ATTRS{serial}==\"*vial:f64c2b3c*\", MODE=\"0660\", GROUP=\"$USER_GID\", TAG+=\"uaccess\", TAG+=\"udev-acl\"" > /etc/udev/rules.d/59-vial.rules && udevadm control --reload && udevadm trigger'
+
+echo "Vial installation complete."
