@@ -136,3 +136,5 @@ export alias g = git
 export alias gcm = git commit -m
 export alias gcam = git commit -a -m
 export alias gcad = git commit -a --amend
+
+export alias zed = zeditor
