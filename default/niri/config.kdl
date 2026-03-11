@@ -221,7 +221,8 @@ binds {
   Mod+Escape { spawn "lowr-menu" "system"; }
 
   // Notifications
-  Mod+Comma { spawn "lowr-notification-dismiss"; }
+  Mod+Comma { spawn "makoctl dismiss"; }
+  Mod+Shift+Comma { spawn "makoctl dismiss --all"; }
 
   // Media keys
   XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05+"; }
