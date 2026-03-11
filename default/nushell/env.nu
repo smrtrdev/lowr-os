@@ -2,6 +2,8 @@ let lowr_path = ($env.HOME | path join ".local" "share" "lowr")
 let lowr_bin = ($lowr_path | path join "bin")
 let local_bin = ($env.HOME | path join ".local" "bin")
 
+$env.SHELL = "/usr/bin/nu"
+
 $env.LOWR_PATH = $lowr_path
 $env.BAT_THEME = "ansi"
 

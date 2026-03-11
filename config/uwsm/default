@@ -11,3 +11,6 @@ export EDITOR=nvim
 
 # Use a custom directory for screenrecordings (remember to make the directory!)
 # export LOWR_SCREENRECORD_DIR="$HOME/Videos/Screencasts"
+
+# Dafault shell
+export SHELL=/usr/bin/nu

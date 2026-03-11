@@ -2,6 +2,9 @@
 export SUDO_EDITOR="$EDITOR"
 export BAT_THEME=ansi
 
+
+export SHELL=/usr/bin/bash
+
 # Duplicated from .config/uwsm/env so SSH works too
 export LOWR_PATH=$HOME/.local/share/lowr
 export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin

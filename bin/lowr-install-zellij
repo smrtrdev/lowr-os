@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Install Zellij and set the user config to the Lowr default.
+
+set -e
+
+lowr_path="${LOWR_PATH:-$HOME/.local/share/lowr}"
+default_config_file="$lowr_path/config/zellij/lowr.kdl"
+user_config_dir="$HOME/.config/zellij"
+user_config_file="$user_config_dir/config.kdl"
+backup_config_file="$user_config_file.bak.$(date +%s)"
+
+confirm_replace() {
+  local prompt="$1"
+  local reply=""
+
+  if lowr-cmd-present gum; then
+    gum confirm "$prompt"
+    return $?
+  fi
+
+  read -r -p "$prompt [y/N] " reply
+  [[ $reply == [Yy] ]]
+}
+
+if ! lowr-pkg-present zellij; then
+  lowr-pkg-add zellij
+fi
+
+if [[ ! -e $default_config_file ]]; then
+  echo "Missing Lowr Zellij config at $default_config_file" >&2
+  exit 1
+fi
+
+mkdir -p "$user_config_dir"
+
+if [[ -d $user_config_file ]] && [[ ! -L $user_config_file ]]; then
+  echo "$user_config_file is a directory, expected a file." >&2
+  exit 1
+fi
+
+if [[ -e $user_config_file || -L $user_config_file ]]; then
+  if cmp -s "$default_config_file" "$user_config_file"; then
+    echo "Zellij config already matches the Lowr default."
+    exit 0
+  fi
+
+  if ! confirm_replace "Replace existing Zellij config at $user_config_file?"; then
+    echo "Keeping existing Zellij config."
+    exit 0
+  fi
+
+  mv "$user_config_file" "$backup_config_file"
+fi
+
+cp -f "$default_config_file" "$user_config_file"
+
+if [[ -e $backup_config_file || -L $backup_config_file ]]; then
+  echo "Replaced $user_config_file with Lowr default."
+  echo "Saved backup as $backup_config_file."
+else
+  echo "Installed Lowr Zellij config at $user_config_file."
+fi
