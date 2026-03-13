@@ -18,7 +18,7 @@ input {
     click-method "clickfinger"
     scroll-factor 0.4
   }
-  focus-follows-mouse
+  focus-follows-mouse max-scroll-amount="0%"
   warp-mouse-to-focus
 }
 
@@ -106,8 +106,9 @@ window-rule {
 }
 
 binds {
-  Mod+Return { spawn "bash" "-lc" "exec uwsm-app -- xdg-terminal-exec --dir=\"$(lowr-cmd-terminal-cwd)\" -- zellij"; }
-  Mod+Ctrl+Return { spawn "bash" "-lc" "exec uwsm-app -- xdg-terminal-exec --dir=\"$(lowr-cmd-terminal-cwd)\""; }
+  Mod+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
+  Mod+Alt+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
+  Mod+Ctrl+Return { spawn "lowr-launch-terminal"; }
   Mod+Shift+Return { spawn "lowr-launch-browser"; }
   Mod+E { spawn "nautilus" "--new-window"; }
   Mod+Shift+B { spawn "lowr-launch-browser"; }

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Launch Ghostty in the active working directory and remove padding when it starts Zellij directly.
+
+args=("$@")
+exec_index=-1
+has_working_directory=0
+
+for arg in "${args[@]}"; do
+  if [[ $arg == "--working-directory" ]] || [[ $arg == --working-directory=* ]]; then
+    has_working_directory=1
+    break
+  fi
+done
+
+if (( ! has_working_directory )); then
+  working_directory=$(lowr-cmd-terminal-cwd 2>/dev/null || true)
+  if [[ -n $working_directory ]]; then
+    args=(--working-directory="$working_directory" "${args[@]}")
+  fi
+fi
+
+for ((i = 0; i < ${#args[@]}; i++)); do
+  if [[ ${args[i]} == "-e" ]]; then
+    exec_index=$i
+    break
+  fi
+done
+
+if (( exec_index >= 0 )); then
+  ghostty_args=("${args[@]:0:$exec_index}")
+  command_args=("${args[@]:$((exec_index + 1))}")
+
+  if (( ${#command_args[@]} == 0 )); then
+    exec setsid uwsm-app -- ghostty "${args[@]}"
+  fi
+
+  if [[ ${command_args[0]} == "zellij" ]]; then
+    ghostty_args+=(--window-padding-x=0 --window-padding-y=0)
+  fi
+
+  exec setsid uwsm-app -- ghostty "${ghostty_args[@]}" -e "${command_args[@]}"
+fi
+
+exec setsid uwsm-app -- ghostty "${args[@]}"
