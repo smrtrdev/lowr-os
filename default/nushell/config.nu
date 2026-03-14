@@ -156,3 +156,11 @@ if (lowr-command-present "zoxide") {
 if (lowr-command-present "carapace") {
   source $"($nu.cache-dir)/carapace.nu"
 }
+
+def --env lowr-init-activitywatch [] {
+  lowr-add-hook hooks.pre_prompt {||
+    try { ^lowr-aw-terminal-heartbeat } catch { }
+  }
+}
+
+if (lowr-command-present "aw-server") { lowr-init-activitywatch }

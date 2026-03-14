@@ -1,0 +1,6 @@
+# Register ActivityWatch terminal tracking in the shell prompt.
+_lowr_aw_heartbeat() {
+  lowr-cmd-present aw-server || return 0
+  (lowr-aw-terminal-heartbeat > /dev/null 2>&1 &)
+}
+PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND}; }_lowr_aw_heartbeat"

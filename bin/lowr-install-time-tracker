@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Install ActivityWatch for time tracking: window, idle, git repo, and browser activity.
+
+set -e
+
+# ── Step 1: Install AUR packages ─────────────────────────────────────────────
+
+echo "Installing ActivityWatch..."
+if ! lowr-pkg-present activitywatch-bin; then
+  lowr-pkg-aur-add activitywatch-bin
+fi
+
+# aw-watcher-window is X11-only and aw-watcher-afk is bundled in activitywatch-bin.
+# aw-awatcher replaces both with a single Wayland-native watcher (uses zwlr-foreign-toplevel-management-v1).
+echo "Installing aw-awatcher (Wayland window + idle watcher)..."
+if ! lowr-pkg-present aw-awatcher; then
+  lowr-pkg-aur-add aw-awatcher
+fi
+
+# ── Step 2: Install systemd user service files ───────────────────────────────
+
+# activitywatch-bin and aw-awatcher don't install service files to systemd paths.
+echo "Installing ActivityWatch service files..."
+mkdir -p "$HOME/.config/systemd/user"
+
+cat > "$HOME/.config/systemd/user/aw-server.service" << 'EOF'
+[Unit]
+Description=ActivityWatch Server
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/opt/activitywatch/aw-server-rust/aw-server-rust
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+cat > "$HOME/.config/systemd/user/aw-awatcher.service" << 'EOF'
+[Unit]
+Description=ActivityWatch Wayland Window and Idle Watcher
+After=aw-server.service
+Requires=aw-server.service
+
+[Service]
+ExecStart=/usr/bin/aw-awatcher
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl --user daemon-reload
+
+# ── Step 3: Enable systemd user services ─────────────────────────────────────
+
+echo "Enabling ActivityWatch services..."
+systemctl --user enable --now aw-server.service
+systemctl --user enable --now aw-awatcher.service
+
+# ── Step 3: Browser extension instructions ───────────────────────────────────
+
+echo
+echo "──────────────────────────────────────────────────────────"
+echo "  Browser Extension (for web activity tracking)"
+echo "──────────────────────────────────────────────────────────"
+echo "  Search 'ActivityWatch Web Watcher' in:"
+echo "    - Chrome Web Store  (for Chromium)"
+echo "    - Firefox Add-ons   (for Firefox / Zen Browser)"
+echo "  It connects automatically to http://localhost:5600"
+echo "──────────────────────────────────────────────────────────"
+
+# ── Step 4: Success summary ───────────────────────────────────────────────────
+
+echo
+echo "ActivityWatch installed and running!"
+echo
+echo "  Tracking:"
+echo "    Window / app activity  (aw-awatcher)"
+echo "    Idle / AFK time        (aw-awatcher)"
+echo "    Directory + git repo   (shell hook — bash + nushell)"
+echo "    Browser                (install extension above)"
+echo
+echo "  Dashboard: http://localhost:5600"
+echo
+echo "  Shell tracking is active in new terminal sessions."
