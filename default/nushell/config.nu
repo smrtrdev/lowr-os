@@ -1,3 +1,5 @@
+source vendor/autoload/wt.nu
+
 use aliases.nu *
 
 def lowr-command-present [command: string] {
