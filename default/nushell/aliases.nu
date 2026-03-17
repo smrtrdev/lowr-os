@@ -55,7 +55,8 @@ export def --env --wrapped zi [...rest: string] {
 # }
 
 export def --wrapped lsa [...rest: string] {
-  ls -a ...$rest
+  let args = if ($rest | is-empty) { ["." ] } else { $rest }
+  ls --all ...$args
 }
 
 export def --wrapped lt [...rest: string] {
