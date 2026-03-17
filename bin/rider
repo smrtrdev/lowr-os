@@ -1,0 +1,6 @@
+#!/bin/bash
+export DOTNET_ROOT="$HOME/.dotnet"
+export DOTNET_MULTILEVEL_LOOKUP=0
+export DOTNET_HOST_PATH="$HOME/.dotnet/dotnet"
+export PATH="$HOME/.dotnet:$PATH"
+nohup ~/.local/share/JetBrains/Toolbox/scripts/rider "$@" >/dev/null 2>&1 &
