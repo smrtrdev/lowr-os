@@ -5,27 +5,25 @@
 
 aw_url="http://localhost:5600"
 bucket="aw-watcher-terminal_$(hostname)"
-flag="$HOME/.local/state/lowr/aw-terminal-bucket-ready"
 
 cwd="$PWD"
 git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
 project="${git_root##*/}"
 now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
 
-# Create bucket once (flag persists across sessions; AW persists buckets across restarts)
-if [[ ! -f $flag ]]; then
+bucket_url="${aw_url}/api/0/buckets/${bucket}"
+
+# Create the bucket if ActivityWatch doesn't have it yet.
+if ! curl -sf --max-time 2 "$bucket_url" > /dev/null 2>&1; then
   payload=$(jq -n \
     --arg client "lowr-time-tracker" \
     --arg type "app.editor.activity" \
     --arg hostname "$(hostname)" \
     '{client: $client, type: $type, hostname: $hostname}')
-  if curl -sf --max-time 2 -X POST \
+  if ! curl -sf --max-time 2 -X POST \
     -H "Content-Type: application/json" \
     -d "$payload" \
-    "${aw_url}/api/0/buckets/${bucket}" > /dev/null 2>&1; then
-    mkdir -p "$(dirname "$flag")"
-    touch "$flag"
-  else
+    "$bucket_url" > /dev/null 2>&1; then
     exit 0  # Server not running yet; skip heartbeat
   fi
 fi
@@ -36,9 +34,9 @@ payload=$(jq -n \
   --arg cwd "$cwd" \
   --arg project "$project" \
   --arg path "$git_root" \
-  '{timestamp: $ts, duration: 0, data: {cwd: $cwd, project: $project, path: $path}}')
+  '{timestamp: $ts, duration: 0, data: {file: $cwd, project: $project, path: $path}}')
 curl -sf --max-time 2 -X POST \
   -H "Content-Type: application/json" \
   -d "$payload" \
-  "${aw_url}/api/0/buckets/${bucket}/heartbeat?pulsetime=30" \
+  "${bucket_url}/heartbeat?pulsetime=30" \
   > /dev/null 2>&1 || true

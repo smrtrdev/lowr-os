@@ -11,18 +11,18 @@ if ! lowr-pkg-present activitywatch-bin; then
   lowr-pkg-aur-add activitywatch-bin
 fi
 
-# aw-watcher-window is X11-only and aw-watcher-afk is bundled in activitywatch-bin.
-# aw-awatcher replaces both with a single Wayland-native watcher (uses zwlr-foreign-toplevel-management-v1).
-echo "Installing aw-awatcher (Wayland window + idle watcher)..."
-if ! lowr-pkg-present aw-awatcher; then
-  lowr-pkg-aur-add aw-awatcher
+# Use aw-watcher-afk for idle tracking and Lowr's niri watcher for focused window tracking.
+echo "Installing ActivityWatch helpers..."
+if lowr-cmd-missing jq curl; then
+  lowr-pkg-add jq curl
 fi
 
 # ── Step 2: Install systemd user service files ───────────────────────────────
 
-# activitywatch-bin and aw-awatcher don't install service files to systemd paths.
+# activitywatch-bin doesn't install service files to systemd paths.
 echo "Installing ActivityWatch service files..."
 mkdir -p "$HOME/.config/systemd/user"
+mkdir -p "$HOME/.config/autostart"
 
 cat > "$HOME/.config/systemd/user/aw-server.service" << 'EOF'
 [Unit]
@@ -38,18 +38,41 @@ Restart=on-failure
 WantedBy=default.target
 EOF
 
-cat > "$HOME/.config/systemd/user/aw-awatcher.service" << 'EOF'
+cat > "$HOME/.config/systemd/user/aw-watcher-afk.service" << 'EOF'
 [Unit]
-Description=ActivityWatch Wayland Window and Idle Watcher
+Description=ActivityWatch Idle Watcher
 After=aw-server.service
 Requires=aw-server.service
 
 [Service]
-ExecStart=/usr/bin/aw-awatcher
+ExecStart=/opt/activitywatch/aw-watcher-afk/aw-watcher-afk
 Restart=on-failure
 
 [Install]
 WantedBy=default.target
+EOF
+
+cat > "$HOME/.config/systemd/user/lowr-aw-window-watcher.service" << 'EOF'
+[Unit]
+Description=Lowr ActivityWatch niri Window Watcher
+After=aw-server.service
+Requires=aw-server.service
+
+[Service]
+Environment=PATH=%h/.local/share/lowr/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/share/lowr/bin/lowr-aw-window-watcher
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Prevent aw-qt autostart from launching the stock aw-watcher-window watcher.
+cat > "$HOME/.config/autostart/aw-qt.desktop" << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=ActivityWatch
+Hidden=true
 EOF
 
 systemctl --user daemon-reload
@@ -57,8 +80,13 @@ systemctl --user daemon-reload
 # ── Step 3: Enable systemd user services ─────────────────────────────────────
 
 echo "Enabling ActivityWatch services..."
+systemctl --user import-environment WAYLAND_DISPLAY DISPLAY NIRI_SOCKET XDG_RUNTIME_DIR
 systemctl --user enable --now aw-server.service
-systemctl --user enable --now aw-awatcher.service
+systemctl --user disable --now aw-awatcher.service >/dev/null 2>&1 || true
+rm -f "$HOME/.config/systemd/user/aw-awatcher.service"
+systemctl --user enable --now aw-watcher-afk.service
+systemctl --user enable --now lowr-aw-window-watcher.service
+systemctl --user restart lowr-aw-window-watcher.service
 
 # ── Step 3: Browser extension instructions ───────────────────────────────────
 
@@ -78,8 +106,8 @@ echo
 echo "ActivityWatch installed and running!"
 echo
 echo "  Tracking:"
-echo "    Window / app activity  (aw-awatcher)"
-echo "    Idle / AFK time        (aw-awatcher)"
+echo "    Window / app activity  (lowr-aw-window-watcher)"
+echo "    Idle / AFK time        (aw-watcher-afk)"
 echo "    Directory + git repo   (shell hook — bash + nushell)"
 echo "    Browser                (install extension above)"
 echo
