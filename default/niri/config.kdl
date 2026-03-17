@@ -87,7 +87,7 @@ workspace "office"
 workspace "web"
 
 spawn-at-startup "lowr-launch-browser"
-spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
+spawn-at-startup "uwsm-app" "--" "gtk-launch" "vivaldi-ompifgpmddkgmclendfeacglnodjjndh-Default"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "Outlook Business"
 
@@ -98,15 +98,15 @@ window-rule {
 }
 
 window-rule {
-    match at-startup=true app-id="chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
+    match at-startup=true app-id="vivaldi-ompifgpmddkgmclendfeacglnodjjndh-Default"
     open-on-workspace "office"
 }
 window-rule {
-    match at-startup=true app-id="chrome-teams.microsoft.com__-Default"
+    match at-startup=true app-id="vivaldi-teams.microsoft.com__-Default"
     open-on-workspace "office"
 }
 window-rule {
-    match at-startup=true app-id="chrome-outlook.office.com__-Default"
+    match at-startup=true app-id="vivaldi-outlook.office.com__-Default"
     open-on-workspace "office"
 }
 

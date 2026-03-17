@@ -12,7 +12,7 @@ bluetui
 bolt
 brightnessctl
 btop
-chromium
+# chromium
 clang
 claude-code
 cups
@@ -123,6 +123,7 @@ ufw-docker
 unzip
 usage
 uwsm
+vivaldi
 waybar
 wev
 whois
