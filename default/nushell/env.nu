@@ -15,6 +15,8 @@ if "EDITOR" in $env {
 
 $env.VISUAL = $env.EDITOR
 
+$env.DOTNET_ROOT = ($env.HOME | path join ".dotnet")
+
 # Generate cached shell integrations
 def --env ensure-cache [name: string, cmd: string] {
     let cache_dir = ($env.HOME | path join ".cache" $name)
@@ -27,7 +29,9 @@ def --env ensure-cache [name: string, cmd: string] {
 
 let extra_paths_prepend = [
   $lowr_bin,
-  $local_bin
+  $local_bin,
+  $env.DOTNET_ROOT,
+  ($env.DOTNET_ROOT | path join "tools")
 ]
 
 let extra_paths_append = [

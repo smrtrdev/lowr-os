@@ -7,6 +7,8 @@ export SHELL=/usr/bin/bash
 
 # Duplicated from .config/uwsm/env so SSH works too
 export LOWR_PATH=$HOME/.local/share/lowr
-export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin
+export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin:$HOME/.dotnet:$HOME/.dotnet/tools
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+export DOTNET_ROOT=$HOME/.dotnet

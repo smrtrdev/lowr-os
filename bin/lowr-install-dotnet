@@ -6,4 +6,4 @@ echo "Installing Dotnet..."
 
 dotnet-install --version latest
 
-echo -e "\nZen Browser installed!"
+echo -e "\ndotnet installed!"
