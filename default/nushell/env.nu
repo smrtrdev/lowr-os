@@ -16,6 +16,7 @@ if "EDITOR" in $env {
 $env.VISUAL = $env.EDITOR
 
 $env.DOTNET_ROOT = ($env.HOME | path join ".dotnet")
+$env.DOTNET_HOST_PATH = ($env.DOTNET_ROOT | path join "dotnet")
 
 # Generate cached shell integrations
 def --env ensure-cache [name: string, cmd: string] {
@@ -39,7 +40,6 @@ let extra_paths_append = [
 ]
 
 $env.PATH = ($extra_paths_prepend | append $env.PATH | append $extra_paths_append)
-
 
 def lowr-command-present [command: string] {
   (which $command | is-not-empty)

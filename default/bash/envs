@@ -12,3 +12,4 @@ export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin:$HOME/.dotnet:$HOME/.dotnet/to
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 export DOTNET_ROOT=$HOME/.dotnet
+export DOTNET_HOST_PATH=$HOME/.dotnet/dotnet
