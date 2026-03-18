@@ -6,7 +6,7 @@ exec_index=-1
 has_working_directory=0
 
 for arg in "${args[@]}"; do
-  if [[ $arg == "--working-directory" ]] || [[ $arg == --working-directory=* ]]; then
+  if [[ $arg == "--dir" ]] || [[ $arg == --working-directory=* ]]; then
     has_working_directory=1
     break
   fi
@@ -15,7 +15,7 @@ done
 if (( ! has_working_directory )); then
   working_directory=$(lowr-cmd-terminal-cwd 2>/dev/null || true)
   if [[ -n $working_directory ]]; then
-    args=(--working-directory="$working_directory" "${args[@]}")
+    args=(--dir="$working_directory" "${args[@]}")
   fi
 fi
 
