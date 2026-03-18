@@ -1,6 +1,7 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
 
+local act = wezterm.action
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
@@ -18,9 +19,36 @@ config.font_size = 10.0
 config.use_fancy_tab_bar = false
 config.window_close_confirmation = "NeverPrompt"
 
-config.keys = {
-  { key = 'Space', mods = 'CTRL', action = wezterm.action.ActivateCopyMode },
+config.key_tables = {
+  ctrl_p_prefix = {
+    { key = 'n',          action = act.SplitPane { direction = 'Right' } },
+    { key = 'x',          action = act.CloseCurrentPane { confirm = false } },
+    { key = 'LeftArrow',  action = act.ActivatePaneDirection 'Left' },
+    { key = 'RightArrow', action = act.ActivatePaneDirection 'Right' },
+    { key = 'UpArrow',    action = act.ActivatePaneDirection 'Up' },
+    { key = 'DownArrow',  action = act.ActivatePaneDirection 'Down' },
+    { key = 'Escape',     action = act.PopKeyTable },
+    { key = 'Enter',      action = act.PopKeyTable },
+  },
 }
+
+config.keys = {
+  { key = 'Space', mods = 'CTRL', action = act.ActivateCopyMode },
+  { key = ',',     mods = 'ALT',  action = act.SplitVertical { domain = "CurrentPaneDomain" } },
+  { key = '.',     mods = 'ALT',  action = act.SplitHorizontal { domain = "CurrentPaneDomain" } },
+  { key = 'j',     mods = 'ALT',  action = act.CloseCurrentPane { confirm = false } },
+  { key = 't',     mods = 'ALT',  action = act.ActivatePaneDirection 'Left' },
+  { key = 'r',     mods = 'ALT',  action = act.ActivatePaneDirection 'Right' },
+  { key = 'm',     mods = 'ALT',  action = act.ActivatePaneDirection 'Up' },
+  { key = 'n',     mods = 'ALT',  action = act.ActivatePaneDirection 'Down' },
+  {
+    key = 'p',
+    mods = 'CTRL',
+    action = act.ActivateKeyTable({ name = 'ctrl_p_prefix' }),
+  },
+}
+
+
 
 local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
 local tabline_opts = {
