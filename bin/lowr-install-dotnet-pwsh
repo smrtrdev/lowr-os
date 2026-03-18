@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Install the Dotnet.
+
+echo "Installing pwsh..."
+
+dotnet tool install --global powershell
+if ! dotnet --list-runtimes 2>/dev/null | grep -q "^Microsoft.NETCore.App 9\."; then
+    dotnet-install --runtime dotnet --channel 9.0
+fi
+
+echo -e "\npwsh installed!"
