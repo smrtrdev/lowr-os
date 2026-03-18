@@ -89,7 +89,7 @@ workspace "web"
 
 spawn-at-startup "lowr-launch-browser"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chromium-ompifgpmddkgmclendfeacglnodjjndh-Default"
-spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
+// spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "Outlook Business"
 
 window-rule {
