@@ -1,0 +1,6 @@
+# Dynamic theme colors
+config-file = ?"~/.config/lowr/current/theme/ghostty.conf"
+config-file = ?"~/.local/share/lowr/default/ghostty/ghostty.conf"
+
+
+command = "/usr/bin/nu"
