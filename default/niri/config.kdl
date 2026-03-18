@@ -137,7 +137,13 @@ binds {
   Mod+F { maximize-column; }
   Mod+Shift+F { fullscreen-window; }
   Mod+Ctrl+F { toggle-window-floating; }
-  Mod+C { center-column; }
+  Mod+Shift+C { center-column; }
+
+  // Copy / Paste
+  Mod+C { spawn "wtype" "-M" "ctrl" "-k" "Insert" "-m" "ctrl"; }
+  Mod+V { spawn "wtype" "-M" "shift" "-k" "Insert" "-m" "shift"; }
+  Mod+X { spawn "wtype" "-M" "ctrl" "-k" "x" "-m" "ctrl"; }
+  Mod+Ctrl+V { spawn "lowr-launch-walker" "-m" "clipboard"; }
 
   // Focus
   Mod+LEFT { focus-column-left; }
