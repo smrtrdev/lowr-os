@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Usage: lowr-envvar-path-add <path>" >&2
+  exit 1
+fi
+
+config_file="$HOME/.config/lowr/env/path"
+mkdir -p "$(dirname "$config_file")"
+
+if grep -qxF "$1" "$config_file" 2>/dev/null; then
+  exit 0
+fi
+
+echo "$1" >> "$config_file"

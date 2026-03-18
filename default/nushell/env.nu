@@ -28,19 +28,6 @@ def --env ensure-cache [name: string, cmd: string] {
     }
 }
 
-let extra_paths_prepend = [
-  $lowr_bin,
-  $local_bin,
-  $env.DOTNET_ROOT,
-  ($env.DOTNET_ROOT | path join "tools")
-]
-
-let extra_paths_append = [
-  "/usr/bin"
-]
-
-$env.PATH = ($extra_paths_prepend | append $env.PATH | append $extra_paths_append)
-
 def lowr-command-present [command: string] {
   (which $command | is-not-empty)
 }
@@ -64,7 +51,6 @@ def lowr-command-present [command: string] {
 if (lowr-command-present "carapace") {
   $env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense' # optional
 
-
   let cache_dir = $nu.cache-dir
 
   if not ($cache_dir | path exists) { mkdir $cache_dir }
@@ -73,3 +59,14 @@ if (lowr-command-present "carapace") {
     ^carapace _carapace nushell | save -f $cache_file
   }
 }
+
+source env.path.nu
+
+set-path [
+  $lowr_bin,
+  $local_bin,
+  $env.DOTNET_ROOT,
+  ($env.DOTNET_ROOT | path join "tools")
+] [
+  "/usr/bin"
+]
