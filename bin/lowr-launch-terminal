@@ -1,37 +1,6 @@
 #!/bin/bash
 
-# Launch default terminal (xdg-terminal). Adds Ghostty-specific arguments when Ghostty is the default terminal.
-
-is_ghostty_default() {
-  local list_file="${XDG_CONFIG_HOME:-$HOME/.config}/xdg-terminals.list"
-  [[ -r $list_file ]] || list_file=/etc/xdg/xdg-terminals.list
-  [[ -r $list_file ]] || return 1
-
-  local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
-  local search_dirs=("$data_home/applications")
-  IFS=: read -ra extra_dirs <<< "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
-  for d in "${extra_dirs[@]}"; do
-    search_dirs+=("$d/applications")
-  done
-  search_dirs+=("$HOME/.nix-profile/share/applications")
-
-  while IFS= read -r entry; do
-    [[ $entry =~ ^[[:space:]]*# ]] && continue
-    [[ -z ${entry// } ]] && continue
-
-    local found=0
-    for dir in "${search_dirs[@]}"; do
-      [[ -f "$dir/$entry" ]] && found=1 && break
-    done
-    (( found )) || continue
-
-    [[ $entry == "com.mitchellh.ghostty.desktop" ]] && return 0
-    return 1
-  done < "$list_file"
-
-  return 1
-}
-
+# Launch default terminal (xdg-terminal).
 args=("$@")
 exec_index=-1
 has_working_directory=0
@@ -48,32 +17,6 @@ if (( ! has_working_directory )); then
   if [[ -n $working_directory ]]; then
     args=(--working-directory="$working_directory" "${args[@]}")
   fi
-fi
-
-if is_ghostty_default; then
-  for ((i = 0; i < ${#args[@]}; i++)); do
-    if [[ ${args[i]} == "-e" ]]; then
-      exec_index=$i
-      break
-    fi
-  done
-
-  if (( exec_index >= 0 )); then
-    ghostty_args=("${args[@]:0:$exec_index}")
-    command_args=("${args[@]:$((exec_index + 1))}")
-
-    if (( ${#command_args[@]} == 0 )); then
-      exec setsid uwsm-app -- ghostty "${args[@]}"
-    fi
-
-    if [[ ${command_args[0]} == "zellij" ]]; then
-      ghostty_args+=(--window-padding-x=0 --window-padding-y=0)
-    fi
-
-    exec setsid uwsm-app -- ghostty "${ghostty_args[@]}" -e "${command_args[@]}"
-  fi
-
-  exec setsid uwsm-app -- ghostty "${args[@]}"
 fi
 
 exec setsid uwsm-app -- xdg-terminal-exec "${args[@]}"
