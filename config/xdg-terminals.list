@@ -1,4 +1,5 @@
 # Terminal emulator preference order for xdg-terminal-exec
 # The first found and valid terminal will be used
+org.wezfurlong.wezterm.desktop
 com.mitchellh.ghostty.desktop
 Alacritty.desktop

@@ -111,6 +111,11 @@ window-rule {
     open-on-workspace "office"
 }
 
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
 binds {
   Mod+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
   Mod+Alt+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
