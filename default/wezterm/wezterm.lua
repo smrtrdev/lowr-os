@@ -10,14 +10,20 @@ config.initial_cols = 120
 config.initial_rows = 28
 
 config.default_prog = { 'nu' }
--- config.color_scheme = 'Tokyo Night'
+config.color_scheme = 'Tokyo Night'
+
 config.font = wezterm.font 'JetBrains Mono'
 config.font_size = 10.0
 
 config.use_fancy_tab_bar = false
+config.window_close_confirmation = "NeverPrompt"
+
+config.keys = {
+  { key = 'Space', mods = 'CTRL', action = wezterm.action.ActivateCopyMode },
+}
 
 local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
-tabline.setup({
+local tabline_opts = {
   options = {
     icons_enabled = true,
     theme = config.colors,
@@ -53,6 +59,15 @@ tabline.setup({
     tabline_z = { 'domain' },
   },
   extensions = {},
-})
+}
+
+local theme_file = wezterm.home_dir .. '/.config/lowr/current/theme/wezterm.theme.lua'
+local ok, apply_theme = pcall(dofile, theme_file)
+if ok and type(apply_theme) == 'function' then
+  config = apply_theme(config, tabline_opts)
+end
+
+tabline.setup(tabline_opts)
+
 -- and finally, return the configuration to wezterm
 return config
