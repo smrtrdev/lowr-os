@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+FIXES_DIR="$(dirname "$(realpath "$0")")/../fixes"
+for script in $(ls "$FIXES_DIR"/fix_*.sh 2>/dev/null | sort); do
+    bash "$script"
+done
