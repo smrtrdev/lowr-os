@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Install the WinBoat windows on docker.
+
+echo "Installing Espanso ..."
+lowr-pkg-aur-add espanso-wayland
+echo -e "\nEspanso installed!"
+
+echo -e "\nregistering Espanso service..."
+espanso service register
+echo -e "\nEspanso service registered!"
