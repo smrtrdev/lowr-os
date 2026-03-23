@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Install openfortivpn, a client for Fortinet's SSL VPN.
+
+echo "Installing openfortivpn..."
+lowr-pkg-add openfortivpn
+
+echo -e "\nopenfortivpn installed!"
+echo "Usage: sudo openfortivpn <host>:<port> -u <username>"
+echo "Or configure /etc/openfortivpn/config for persistent settings."
