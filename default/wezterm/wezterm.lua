@@ -41,11 +41,6 @@ config.keys = {
   { key = 'r',     mods = 'ALT',  action = act.ActivatePaneDirection 'Right' },
   { key = 'm',     mods = 'ALT',  action = act.ActivatePaneDirection 'Up' },
   { key = 'n',     mods = 'ALT',  action = act.ActivatePaneDirection 'Down' },
-  {
-    key = 'p',
-    mods = 'CTRL',
-    action = act.ActivateKeyTable({ name = 'ctrl_p_prefix' }),
-  },
 }
 
 
