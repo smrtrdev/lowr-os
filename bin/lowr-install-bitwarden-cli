@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Install the Bitwarden CLI for managing vault items from the terminal.
+
+echo "Installing Bitwarden CLI..."
+mise use -g npm:@bitwarden/cli
+echo -e "\nBitwarden CLI installed!"
+echo "Usage: bw login"
+echo "Then: bw unlock && export BW_SESSION=<session-key>"
