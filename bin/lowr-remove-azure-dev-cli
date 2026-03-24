@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Installing Azure Dev CLI..."
+
+curl -fsSL https://aka.ms/uninstall-azd.sh | bash
+
+echo -e "\nAzure Dev CLI installed!"

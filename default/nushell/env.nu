@@ -18,6 +18,8 @@ $env.VISUAL = $env.EDITOR
 $env.DOTNET_ROOT = ($env.HOME | path join ".dotnet")
 $env.DOTNET_HOST_PATH = ($env.DOTNET_ROOT | path join "dotnet")
 
+$env.AZURE_DEV_COLLECT_TELEMETRY = "no"
+
 # Generate cached shell integrations
 def --env ensure-cache [name: string, cmd: string] {
     let cache_dir = ($env.HOME | path join ".cache" $name)
