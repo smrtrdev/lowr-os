@@ -19,17 +19,50 @@ config.font_size = 10.0
 config.use_fancy_tab_bar = false
 config.window_close_confirmation = "NeverPrompt"
 
-config.key_tables = {
-  ctrl_p_prefix = {
-    { key = 'n',          action = act.SplitPane { direction = 'Right' } },
-    { key = 'x',          action = act.CloseCurrentPane { confirm = false } },
-    { key = 'LeftArrow',  action = act.ActivatePaneDirection 'Left' },
-    { key = 'RightArrow', action = act.ActivatePaneDirection 'Right' },
-    { key = 'UpArrow',    action = act.ActivatePaneDirection 'Up' },
-    { key = 'DownArrow',  action = act.ActivatePaneDirection 'Down' },
-    { key = 'Escape',     action = act.PopKeyTable },
-    { key = 'Enter',      action = act.PopKeyTable },
+config.mouse_bindings = {
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'NONE',
+    action = act.CompleteSelection 'ClipboardAndPrimarySelection',
   },
+}
+
+-- get default key tables
+local key_tables = wezterm.gui.default_key_tables()
+
+-- override only "y" in copy_mode
+table.insert(key_tables.copy_mode, {
+  key = "y",
+  mods = "NONE",
+  action = act.Multiple { act.CopyTo 'ClipboardAndPrimarySelection', act.CopyMode 'Close' },
+})
+table.insert(key_tables.copy_mode, {
+  key = "Enter",
+  mods = "NONE",
+  action = act.Multiple { act.CopyTo 'ClipboardAndPrimarySelection', act.CopyMode 'Close' },
+})
+
+config.key_tables = key_tables
+
+config.key_tables.alt_p_prefix = {
+  { key = 'e',          action = act.SplitHorizontal {} },
+  { key = 'i',          action = act.SplitVertical {} },
+  { key = 'x',          action = act.CloseCurrentPane { confirm = false } },
+  { key = 'LeftArrow',  action = act.ActivatePaneDirection 'Left' },
+  { key = 'RightArrow', action = act.ActivatePaneDirection 'Right' },
+  { key = 'UpArrow',    action = act.ActivatePaneDirection 'Up' },
+  { key = 'DownArrow',  action = act.ActivatePaneDirection 'Down' },
+  { key = 't',          action = act.ActivatePaneDirection 'Left' },
+  { key = 'r',          action = act.ActivatePaneDirection 'Right' },
+  { key = 'm',          action = act.ActivatePaneDirection 'Up' },
+  { key = 'n',          action = act.ActivatePaneDirection 'Down' },
+  {
+    key = 'p',
+    mods = 'ALT',
+    action = act.PopKeyTable,
+  },
+  { key = 'Escape', action = act.PopKeyTable },
+  { key = 'Enter',  action = act.PopKeyTable },
 }
 
 config.keys = {
@@ -41,6 +74,7 @@ config.keys = {
   { key = 'r',     mods = 'ALT',  action = act.ActivatePaneDirection 'Right' },
   { key = 'm',     mods = 'ALT',  action = act.ActivatePaneDirection 'Up' },
   { key = 'n',     mods = 'ALT',  action = act.ActivatePaneDirection 'Down' },
+  { key = 'p',     mods = 'ALT',  action = act.ActivateKeyTable { name = 'alt_p_prefix', one_shot = false } },
 }
 
 
