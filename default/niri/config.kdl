@@ -83,12 +83,20 @@ spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DI
 spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
 
+// outputs {
+//   "eDP-1" { workspaces "office"; }
+//   "DP-1"  { workspaces "web"; }
+// }
 
-workspace "office"
-workspace "web"
+workspace "office" {
+    open-on-output "eDP-1"
+}
+workspace "web" {
+   open-on-output "DP-8"
+}
 
 spawn-at-startup "lowr-launch-browser"
-spawn-at-startup "uwsm-app" "--" "gtk-launch" "chromium-ompifgpmddkgmclendfeacglnodjjndh-Default"
+spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
 // spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "Outlook Business"
 
@@ -99,21 +107,38 @@ window-rule {
 }
 
 window-rule {
-    match at-startup=true app-id="chromium-ompifgpmddkgmclendfeacglnodjjndh-Default"
+    match at-startup=true app-id="chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
     open-on-workspace "office"
 }
 window-rule {
-    match at-startup=true app-id="chromium-teams.microsoft.com__-Default"
+    match at-startup=true app-id="chrome-teams.microsoft.com__-Default"
     open-on-workspace "office"
 }
 window-rule {
-    match at-startup=true app-id="chromium-outlook.office.com__-Default"
+    match at-startup=true app-id="chrome-outlook.office.com__-Default"
     open-on-workspace "office"
 }
 
 window-rule {
     match app-id=r#"^org\.wezfurlong\.wezterm$"#
     default-column-width {}
+}
+
+window-rule {
+    match app-id="dev.zed.Zed"
+    match app-id="code"
+    match app-id="jetbrains-rider"
+    match app-id="@opencode-ai/desktop-electron"
+    default-column-width { proportion 1.0; }
+}
+
+window-rule {
+    match app-id="obsidian"
+    default-column-width { proportion 0.66667; }
+}
+window-rule {
+    match app-id="zen"
+    default-column-width { proportion 0.75; }
 }
 
 binds {
@@ -200,6 +225,8 @@ binds {
   Mod+7 { focus-workspace 7; }
   Mod+8 { focus-workspace 8; }
   Mod+9 { focus-workspace 9; }
+  Mod+ALT+D { move-workspace-to-monitor "eDP-1"; }
+  Mod+ALT+H { move-workspace-to-monitor "DP-8"; }
   Mod+Shift+1 { move-column-to-workspace 1; }
   Mod+Shift+2 { move-column-to-workspace 2; }
   Mod+Shift+3 { move-column-to-workspace 3; }
