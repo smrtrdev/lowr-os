@@ -225,8 +225,8 @@ binds {
   Mod+7 { focus-workspace 7; }
   Mod+8 { focus-workspace 8; }
   Mod+9 { focus-workspace 9; }
-  Mod+ALT+D { move-workspace-to-monitor "eDP-1"; }
-  Mod+ALT+H { move-workspace-to-monitor "DP-8"; }
+  Mod+ALT+D { move-workspace-to-monitor-left; }
+  Mod+ALT+H { move-workspace-to-monitor-right; }
   Mod+Shift+1 { move-column-to-workspace 1; }
   Mod+Shift+2 { move-column-to-workspace 2; }
   Mod+Shift+3 { move-column-to-workspace 3; }
