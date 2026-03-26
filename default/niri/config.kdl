@@ -83,11 +83,6 @@ spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DI
 spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
 
-// outputs {
-//   "eDP-1" { workspaces "office"; }
-//   "DP-1"  { workspaces "web"; }
-// }
-
 workspace "office" {
     open-on-output "eDP-1"
 }
