@@ -11,10 +11,13 @@ if ! lowr-pkg-present activitywatch-bin; then
   lowr-pkg-aur-add activitywatch-bin
 fi
 
-# Use aw-watcher-afk for idle tracking and Lowr's niri watcher for focused window tracking.
+# Use Lowr's Wayland-native afk watcher and niri watcher for idle and window tracking.
 echo "Installing ActivityWatch helpers..."
 if lowr-cmd-missing jq curl; then
   lowr-pkg-add jq curl
+fi
+if lowr-cmd-missing swayidle; then
+  lowr-pkg-add swayidle
 fi
 
 # ── Step 2: Install systemd user service files ───────────────────────────────
@@ -38,14 +41,15 @@ Restart=on-failure
 WantedBy=default.target
 EOF
 
-cat > "$HOME/.config/systemd/user/aw-watcher-afk.service" << 'EOF'
+cat > "$HOME/.config/systemd/user/lowr-aw-afk-watcher.service" << 'EOF'
 [Unit]
-Description=ActivityWatch Idle Watcher
+Description=Lowr ActivityWatch Wayland AFK Watcher
 After=aw-server.service
 Requires=aw-server.service
 
 [Service]
-ExecStart=/opt/activitywatch/aw-watcher-afk/aw-watcher-afk
+Environment=PATH=%h/.local/share/lowr/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/share/lowr/bin/lowr-aw-afk-watcher
 Restart=on-failure
 
 [Install]
@@ -84,7 +88,10 @@ systemctl --user import-environment WAYLAND_DISPLAY DISPLAY NIRI_SOCKET XDG_RUNT
 systemctl --user enable --now aw-server.service
 systemctl --user disable --now aw-awatcher.service >/dev/null 2>&1 || true
 rm -f "$HOME/.config/systemd/user/aw-awatcher.service"
-systemctl --user enable --now aw-watcher-afk.service
+systemctl --user disable --now aw-watcher-afk.service >/dev/null 2>&1 || true
+rm -f "$HOME/.config/systemd/user/aw-watcher-afk.service"
+systemctl --user enable --now lowr-aw-afk-watcher.service
+systemctl --user restart lowr-aw-afk-watcher.service
 systemctl --user enable --now lowr-aw-window-watcher.service
 systemctl --user restart lowr-aw-window-watcher.service
 
@@ -107,7 +114,7 @@ echo "ActivityWatch installed and running!"
 echo
 echo "  Tracking:"
 echo "    Window / app activity  (lowr-aw-window-watcher)"
-echo "    Idle / AFK time        (aw-watcher-afk)"
+echo "    Idle / AFK time        (lowr-aw-afk-watcher)"
 echo "    Directory + git repo   (shell hook — bash + nushell)"
 echo "    Browser                (install extension above)"
 echo
