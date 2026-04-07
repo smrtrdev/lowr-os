@@ -23,7 +23,7 @@ config.mouse_bindings = {
   {
     event = { Up = { streak = 1, button = 'Left' } },
     mods = 'NONE',
-    action = act.CompleteSelection 'ClipboardAndPrimarySelection',
+    action = act.CompleteSelection 'Clipboard',
   },
 }
 
@@ -34,12 +34,12 @@ local key_tables = wezterm.gui.default_key_tables()
 table.insert(key_tables.copy_mode, {
   key = "y",
   mods = "NONE",
-  action = act.Multiple { act.CopyTo 'ClipboardAndPrimarySelection', act.CopyMode 'Close' },
+  action = act.Multiple { act.CopyTo 'Clipboard', act.CopyMode 'Close' },
 })
 table.insert(key_tables.copy_mode, {
   key = "Enter",
   mods = "NONE",
-  action = act.Multiple { act.CopyTo 'ClipboardAndPrimarySelection', act.CopyMode 'Close' },
+  action = act.Multiple { act.CopyTo 'Clipboard', act.CopyMode 'Close' },
 })
 
 config.key_tables = key_tables
