@@ -26,6 +26,7 @@ layout {
   gaps 4
   empty-workspace-above-first
   center-focused-column "on-overflow"
+  always-center-single-column
   default-column-width { proportion 0.5; }
 
   preset-column-widths {
@@ -157,6 +158,7 @@ binds {
   Mod+F { maximize-column; }
   Mod+Shift+F { fullscreen-window; }
   Mod+Ctrl+F { toggle-window-floating; }
+  Mod+Alt+F { set-column-width "97%"; }
   Mod+Shift+C { center-column; }
 
   // Copy / Paste
