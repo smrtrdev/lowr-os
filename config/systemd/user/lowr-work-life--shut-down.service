@@ -1,0 +1,12 @@
+[Unit]
+Description=LowR Work-Life Shutdown Check
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/lowr/bin/lowr-work-life--shut-down
+Environment=PATH=%h/.local/share/lowr/bin:/usr/local/bin:/usr/bin:/bin
+Environment=DISPLAY=:0
+EnvironmentFile=-%h/.config/lowr/work-life--shut-down.env
+TimeoutStartSec=10min
+LogLevelMax=warning

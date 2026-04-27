@@ -16,9 +16,16 @@ The goal is a focused local service, not a full productivity platform. It should
 
 ## Solution
 
-Create a service named `work-life--shut-down`.
+Create a Lowr-managed shutdown guard using the existing project conventions:
 
-The service runs at startup and periodically checks whether the current local time falls inside a configured shutdown window, such as:
+- Script: `bin/lowr-work-life--shut-down`
+- User service: `config/systemd/user/lowr-work-life--shut-down.service`
+- User timer: `config/systemd/user/lowr-work-life--shut-down.timer`
+- Runtime database: `${XDG_STATE_HOME:-$HOME/.local/state}/lowr/work-life--shut-down.sqlite`
+
+The service should be a systemd user unit with Lowr-consistent naming. The timer should start it shortly after boot/session start and run it periodically, similar to `lowr-battery-monitor.service` and `lowr-battery-monitor.timer`.
+
+Each run checks whether the current local time falls inside a configured shutdown window, such as:
 
 ```text
 22:00-04:30
@@ -31,6 +38,8 @@ When the computer is inside a shutdown window:
 3. The service waits 5 minutes.
 4. If the current time is still inside the shutdown window, the service shuts down the machine.
 5. If the user powers the computer back on and it is still inside the shutdown window, the same flow repeats.
+
+The command should be implemented in Bash to match the rest of Lowr. It can use `sqlite3` for the audit record, `notify-send` for the warning, and `systemctl poweroff` for the shutdown action.
 
 SQLite stores notification events, for example:
 
@@ -51,7 +60,7 @@ SHUTDOWN_WINDOWS=22:00-04:30
 WARNING_MINUTES=5
 ```
 
-The service should treat overnight windows correctly, where the end time is earlier than the start time.
+The service should treat overnight windows correctly, where the end time is earlier than the start time. It should also avoid duplicate countdowns if the timer fires again while a 5-minute warning is already active.
 
 ## Rabbit Holes
 
@@ -62,6 +71,8 @@ Avoid trying to detect user intent after reboot. If the current time is inside t
 Avoid overengineering the database. The first version only needs to record when warnings were issued and which window caused them.
 
 Avoid relying only on one-shot timers. The service needs to handle booting directly into an active shutdown window.
+
+Avoid making this a long-running daemon unless the timer approach proves insufficient. A oneshot service plus timer fits the existing Lowr structure and keeps idle memory usage near zero.
 
 ## No-Gos
 
@@ -76,3 +87,5 @@ No per-application blocking.
 No automatic override based on active downloads, meetings, or unsaved work.
 
 No silent shutdown. The user must always receive the 5-minute warning before shutdown.
+
+No non-Lowr service naming. Use `lowr-work-life--shut-down.service` for consistency with existing Lowr user units.

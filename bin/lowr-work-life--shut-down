@@ -1,0 +1,156 @@
+#!/bin/bash
+
+# Designed to be run by systemd timer and shut down during configured off-hours.
+
+set -euo pipefail
+
+SHUTDOWN_WINDOWS=${SHUTDOWN_WINDOWS:-"22:00-04:30"}
+WARNING_MINUTES=${WARNING_MINUTES:-5}
+STATE_HOME=${XDG_STATE_HOME:-"$HOME/.local/state"}
+STATE_DIR="$STATE_HOME/lowr"
+DB_PATH="$STATE_DIR/work-life--shut-down.sqlite"
+RUNTIME_DIR=${XDG_RUNTIME_DIR:-"/run/user/$UID"}
+LOCK_PATH="$RUNTIME_DIR/lowr-work-life--shut-down.lock"
+
+current_minutes() {
+  local hour minute
+
+  hour=$(date +%H)
+  minute=$(date +%M)
+
+  echo $(( 10#$hour * 60 + 10#$minute ))
+}
+
+time_to_minutes() {
+  local time hour minute
+
+  time=$1
+  hour=${time%%:*}
+  minute=${time##*:}
+
+  echo $(( 10#$hour * 60 + 10#$minute ))
+}
+
+inside_window() {
+  local now start end start_minutes end_minutes
+
+  now=$1
+  start=$2
+  end=$3
+  start_minutes=$(time_to_minutes "$start")
+  end_minutes=$(time_to_minutes "$end")
+
+  if (( start_minutes == end_minutes )); then
+    return 1
+  fi
+
+  if (( start_minutes < end_minutes )); then
+    (( now >= start_minutes && now < end_minutes ))
+  else
+    (( now >= start_minutes || now < end_minutes ))
+  fi
+}
+
+active_window() {
+  local now windows window start end
+  local -a window_list
+
+  now=$(current_minutes)
+  windows=${SHUTDOWN_WINDOWS// /}
+
+  IFS=',' read -ra window_list <<< "$windows"
+  for window in "${window_list[@]}"; do
+    if [[ ! $window =~ ^([0-9]{2}):([0-9]{2})-([0-9]{2}):([0-9]{2})$ ]]; then
+      continue
+    fi
+
+    start=${window%-*}
+    end=${window#*-}
+
+    if [[ ! $start =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
+      continue
+    fi
+
+    if [[ ! $end =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
+      continue
+    fi
+
+    if inside_window "$now" "$start" "$end"; then
+      echo "$start $end"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+init_db() {
+  mkdir -p "$STATE_DIR"
+  sqlite3 "$DB_PATH" <<'SQL'
+CREATE TABLE IF NOT EXISTS shutdown_notifications (
+  id INTEGER PRIMARY KEY,
+  notified_at TEXT NOT NULL,
+  shutdown_window_start TEXT NOT NULL,
+  shutdown_window_end TEXT NOT NULL,
+  shutdown_scheduled_for TEXT NOT NULL
+);
+SQL
+}
+
+record_notification() {
+  local start end notified_at scheduled_for
+
+  start=$1
+  end=$2
+  notified_at=$(date --iso-8601=seconds)
+  scheduled_for=$(date -d "+$WARNING_MINUTES minutes" --iso-8601=seconds)
+
+  sqlite3 "$DB_PATH" <<SQL
+INSERT INTO shutdown_notifications (
+  notified_at,
+  shutdown_window_start,
+  shutdown_window_end,
+  shutdown_scheduled_for
+) VALUES (
+  '$notified_at',
+  '$start',
+  '$end',
+  '$scheduled_for'
+);
+SQL
+}
+
+notify_shutdown() {
+  notify-send -u critical "Work-life shutdown" "System will shut down in $WARNING_MINUTES minutes." -t 30000
+}
+
+shutdown_now() {
+  systemctl poweroff
+}
+
+if [[ ! $WARNING_MINUTES =~ ^[0-9]+$ ]] || (( WARNING_MINUTES < 1 )); then
+  echo "WARNING_MINUTES must be a positive integer" >&2
+  exit 1
+fi
+
+if lowr-cmd-missing sqlite3 notify-send; then
+  echo "Missing required command: sqlite3 or notify-send" >&2
+  exit 1
+fi
+
+mkdir -p "$RUNTIME_DIR"
+exec 9>"$LOCK_PATH"
+if ! flock -n 9; then
+  exit 0
+fi
+
+if read -r window_start window_end < <(active_window); then
+  init_db
+  record_notification "$window_start" "$window_end"
+  notify_shutdown
+  sleep "$(( WARNING_MINUTES * 60 ))"
+
+  if active_window >/dev/null; then
+    shutdown_now
+  fi
+fi

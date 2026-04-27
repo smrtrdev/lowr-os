@@ -1,0 +1,11 @@
+[Unit]
+Description=LowR Work-Life Shutdown Timer
+Requires=lowr-work-life--shut-down.service
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=10sec
+
+[Install]
+WantedBy=timers.target
