@@ -96,7 +96,7 @@ export def eff [] {
   run-external $editor $target
 }
 
-export def --wrapped open [...rest: string] {
+export def --wrapped xopen [...rest: string] {
   ^xdg-open ...$rest
 }
 
