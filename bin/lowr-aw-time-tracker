@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Summarize ActivityWatch events into editable daily project time records.
+
+set -euo pipefail
+
+LOWR_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export LOWR_PATH
+
+exec python3 "$LOWR_PATH/bin/lib/time-tracker.py" "$@"

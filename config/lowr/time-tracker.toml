@@ -1,0 +1,21 @@
+[activitywatch]
+url = "http://127.0.0.1:5600"
+
+[day]
+start_time = "04:00"
+
+[rounding]
+minutes = 15
+
+[breaks]
+coffee_minutes = 15
+coffee_window_minutes = 60
+coffee_morning_time = "09:30"
+coffee_afternoon_time = "15:00"
+
+[noise]
+stretch_minutes = 5
+apps = ["zen", "chromium", "firefox", "google-chrome", "brave", "browser"]
+
+[work_apps]
+apps = ["code", "codium", "vscode", "zed", "rider", "wezterm", "terminal", "alacritty", "kitty", "ghostty"]

@@ -119,5 +119,6 @@ echo "    Directory + git repo   (shell hook — bash + nushell)"
 echo "    Browser                (install extension above)"
 echo
 echo "  Dashboard: http://localhost:5600"
+echo "  Daily summary: lowr-aw-time-tracker"
 echo
 echo "  Shell tracking is active in new terminal sessions."
