@@ -3,7 +3,7 @@
 input {
   keyboard {
     xkb {
-      layout "de"
+      layout "de,custom"
       options "grp:win_space_toggle"
     }
 
@@ -11,12 +11,12 @@ input {
     repeat-delay 600
     // numlock
   }
-
   touchpad {
     natural-scroll
-    tap
     click-method "clickfinger"
     scroll-factor 0.4
+    // tap
+    dwt
   }
   focus-follows-mouse max-scroll-amount="0%"
   warp-mouse-to-focus
