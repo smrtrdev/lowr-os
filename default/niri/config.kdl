@@ -265,7 +265,7 @@ binds {
   Mod+Alt+Space { spawn "lowr-menu"; }
   Mod+Z { spawn "lowr-menu"; }
   Mod+adiaeresis { spawn "lowr-launch-walker"; }
-  Mod+udiaeresis { spawn "lowr-menu"; }
+  Mod+I { spawn "lowr-menu"; }
   Mod+Escape { spawn "lowr-menu" "system"; }
 
   // Notifications
