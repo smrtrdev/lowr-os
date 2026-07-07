@@ -93,19 +93,14 @@ def --env --wrapped wt [...args: string@"nu-complete wt"] {
         ^$worktrunk_bin ...$args
     } else {
         let directive_file = (mktemp --tmpdir)
-        let stdout_file = (mktemp --tmpdir)
 
-        # Capture stdout to file for pipeline passthrough; stderr flows to terminal.
-        # Nushell 0.98+ throws ShellError on non-zero exit (like bash `set -e`).
-        # `try` catches it so directive processing and temp file cleanup still run.
-        let exit_code = (try {
-            with-env { WORKTRUNK_DIRECTIVE_FILE: $directive_file } {
-                ^$worktrunk_bin ...$args o> $stdout_file
-            }
-            0
-        } catch {
-            $env.LAST_EXIT_CODE
-        })
+        # Capture the external command result without `try`, because some
+        # Nushell versions reject `try` in value position during autoload parsing.
+        let result = (with-env { WORKTRUNK_DIRECTIVE_FILE: $directive_file } {
+            ^$worktrunk_bin ...$args
+        } | complete)
+        let exit_code = $result.exit_code
+        if ($result.stderr | is-not-empty) { print -e $result.stderr }
 
         # Process directive file line by line
         if ($directive_file | path exists) and (open $directive_file --raw | str trim | is-not-empty) {
@@ -131,8 +126,7 @@ def --env --wrapped wt [...args: string@"nu-complete wt"] {
         }
 
         rm -f $directive_file
-        let output = (open $stdout_file --raw)
-        rm -f $stdout_file
+        let output = $result.stdout
 
         # Return stdout or propagate failure as the function's last expression.
         # Using a failing external command (not `error make`) so nushell treats it
