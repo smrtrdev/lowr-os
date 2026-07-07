@@ -43,7 +43,7 @@ def "lowr-parse-vars" [] {
 def --env "lowr-update-env" [] {
   for $var in $in {
     if $var.op == "set" {
-      if ($var.name | str upcase) == "PATH" {
+      if ($var.name | str uppercase) == "PATH" {
         $env.PATH = ($var.value | split row (char esep))
       } else {
         load-env {($var.name): $var.value}
