@@ -5,9 +5,10 @@
 
 # Use the focused Niri window PID, then walk terminal-backed descendant
 # processes to find the shell or foreground TUI owning that terminal session.
-# For editor windows, fall back to their workspace cwd. For Zellij, follow the
-# window title back to the matching server process when the terminal client does
-# not directly own the pane process.
+# For editor windows, fall back to their workspace cwd. For Herdr, query the
+# focused pane in the client's named session. For Zellij, follow the window title
+# back to the matching server process when the terminal client does not directly
+# own the pane process.
 
 default_dir="$HOME"
 zellij_client_seen=0
@@ -187,6 +188,64 @@ get_tmux_client_cwd() {
 	return 1
 }
 
+get_herdr_client_session() {
+  local pid="$1"
+  local session="default"
+  local -a args=()
+  local i
+
+  [[ -r /proc/$pid/cmdline ]] || return 1
+  mapfile -d '' -t args < "/proc/$pid/cmdline"
+
+  for ((i = 0; i < ${#args[@]}; i++)); do
+    if [[ ${args[$i]} == "--session" ]]; then
+      ((i + 1 < ${#args[@]})) || return 1
+      session="${args[$((i + 1))]}"
+      break
+    fi
+
+    if [[ ${args[$i]} == --session=* ]]; then
+      session="${args[$i]#--session=}"
+      break
+    fi
+
+    if [[ ${args[$i]} == "session" ]] && [[ ${args[$((i + 1))]:-} == "attach" ]]; then
+      session="${args[$((i + 2))]:-}"
+      break
+    fi
+  done
+
+  [[ -n $session ]] || return 1
+  printf '%s\n' "$session"
+}
+
+get_herdr_client_cwd() {
+  local pid="$1"
+  local herdr_exe session pane cwd
+
+  herdr_exe=$(readlink "/proc/$pid/exe" 2>/dev/null || true)
+  [[ -x $herdr_exe ]] || return 1
+
+  session=$(get_herdr_client_session "$pid" 2>/dev/null || true)
+  [[ -n $session ]] || return 1
+
+  pane=$(env \
+    -u HERDR_CLIENT_SOCKET_PATH \
+    -u HERDR_ENV \
+    -u HERDR_PANE_ID \
+    -u HERDR_SESSION \
+    -u HERDR_SOCKET_PATH \
+    -u HERDR_TAB_ID \
+    -u HERDR_WORKSPACE_ID \
+    "$herdr_exe" --session "$session" pane current 2>/dev/null || true)
+  [[ -n $pane ]] || return 1
+
+  cwd=$(jq -r '.result.pane.foreground_cwd // .result.pane.cwd // empty' <<<"$pane")
+  [[ -n $cwd ]] || return 1
+
+  normalize_path_candidate "$cwd"
+}
+
 get_process_comm() {
 	local pid="$1"
 	local comm=""
@@ -278,7 +337,9 @@ get_candidate_cwd() {
 	cwd=$(readlink "/proc/$pid/cwd" 2>/dev/null || true)
 	comm=$(get_process_comm "$pid" 2>/dev/null || true)
 
-	if [[ $comm == "tmux" ]]; then
+	if [[ $comm == "herdr" ]]; then
+		cwd=$(get_herdr_client_cwd "$pid" 2>/dev/null || printf '%s' "$cwd")
+	elif [[ $comm == "tmux" ]]; then
 		cwd=$(get_tmux_client_cwd "$tty" 2>/dev/null || printf '%s' "$cwd")
 	fi
 
