@@ -5,6 +5,21 @@ local act = wezterm.action
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
+local function is_herdr(pane)
+  local process = pane:get_foreground_process_name()
+  return process == 'herdr' or (process and process:match '/herdr$')
+end
+
+local function herdr_or_wezterm(key, wezterm_action)
+  return wezterm.action_callback(function(window, pane)
+    if is_herdr(pane) then
+      window:perform_action(act.SendKey { key = key, mods = 'ALT' }, pane)
+    else
+      window:perform_action(wezterm_action, pane)
+    end
+  end)
+end
+
 -- This is where you actually apply your config choices
 
 config.initial_cols = 120
@@ -67,13 +82,13 @@ config.key_tables.alt_p_prefix = {
 
 config.keys = {
   { key = 'Space', mods = 'CTRL', action = act.ActivateCopyMode },
-  { key = ',',     mods = 'ALT',  action = act.SplitVertical { domain = "CurrentPaneDomain" } },
-  { key = '.',     mods = 'ALT',  action = act.SplitHorizontal { domain = "CurrentPaneDomain" } },
-  { key = 'j',     mods = 'ALT',  action = act.CloseCurrentPane { confirm = false } },
-  { key = 't',     mods = 'ALT',  action = act.ActivatePaneDirection 'Left' },
-  { key = 'r',     mods = 'ALT',  action = act.ActivatePaneDirection 'Right' },
-  { key = 'm',     mods = 'ALT',  action = act.ActivatePaneDirection 'Up' },
-  { key = 'n',     mods = 'ALT',  action = act.ActivatePaneDirection 'Down' },
+  { key = ',',     mods = 'ALT',  action = herdr_or_wezterm(',', act.SplitVertical { domain = "CurrentPaneDomain" }) },
+  { key = '.',     mods = 'ALT',  action = herdr_or_wezterm('.', act.SplitHorizontal { domain = "CurrentPaneDomain" }) },
+  { key = 'j',     mods = 'ALT',  action = herdr_or_wezterm('j', act.CloseCurrentPane { confirm = false }) },
+  { key = 't',     mods = 'ALT',  action = herdr_or_wezterm('t', act.ActivatePaneDirection 'Left') },
+  { key = 'r',     mods = 'ALT',  action = herdr_or_wezterm('r', act.ActivatePaneDirection 'Right') },
+  { key = 'm',     mods = 'ALT',  action = herdr_or_wezterm('m', act.ActivatePaneDirection 'Up') },
+  { key = 'n',     mods = 'ALT',  action = herdr_or_wezterm('n', act.ActivatePaneDirection 'Down') },
   { key = 'p',     mods = 'ALT',  action = act.ActivateKeyTable { name = 'alt_p_prefix', one_shot = false } },
 }
 
