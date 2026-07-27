@@ -1,3 +1,5 @@
+source vendor/autoload/wt.nu
+
 use aliases.nu *
 
 def lowr-command-present [command: string] {
@@ -41,7 +43,7 @@ def "lowr-parse-vars" [] {
 def --env "lowr-update-env" [] {
   for $var in $in {
     if $var.op == "set" {
-      if ($var.name | str upcase) == "PATH" {
+      if ($var.name | str uppercase) == "PATH" {
         $env.PATH = ($var.value | split row (char esep))
       } else {
         load-env {($var.name): $var.value}
@@ -156,3 +158,14 @@ if (lowr-command-present "zoxide") {
 if (lowr-command-present "carapace") {
   source $"($nu.cache-dir)/carapace.nu"
 }
+
+def --env lowr-init-activitywatch [] {
+  lowr-add-hook hooks.pre_prompt {||
+    try { ^lowr-aw-terminal-heartbeat } catch { }
+  }
+}
+
+if (lowr-command-present "aw-qt") { lowr-init-activitywatch }
+
+use try_alias.nu *
+use bw.nu *

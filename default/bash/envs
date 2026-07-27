@@ -2,6 +2,28 @@
 export SUDO_EDITOR="$EDITOR"
 export BAT_THEME=ansi
 
+
+export SHELL=/usr/bin/bash
+
 # Duplicated from .config/uwsm/env so SSH works too
 export LOWR_PATH=$HOME/.local/share/lowr
-export PATH=$LOWR_PATH/bin:$PATH:$HOME/.local/bin
+
+_lowr_config_paths=""
+if [ -f "$HOME/.config/lowr/env/path" ]; then
+  while IFS= read -r _line; do
+    _line="${_line%%#*}"   # strip comments
+    _line="${_line// /}"   # trim (leading/trailing spaces via parameter expansion below)
+    _line="${_line#"${_line%%[![:space:]]*}"}"
+    _line="${_line%"${_line##*[![:space:]]}"}"
+    _line="${_line/\$HOME/$HOME}"
+    [ -n "$_line" ] && _lowr_config_paths="$_lowr_config_paths:$_line"
+  done < "$HOME/.config/lowr/env/path"
+fi
+
+export PATH="$LOWR_PATH/bin:$HOME/.local/bin:$HOME/.dotnet:$HOME/.dotnet/tools${_lowr_config_paths}:$PATH:/usr/bin"
+unset _lowr_config_paths _line
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+export DOTNET_ROOT=$HOME/.dotnet
+export DOTNET_HOST_PATH=$HOME/.dotnet/dotnet

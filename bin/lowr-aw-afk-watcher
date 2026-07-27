@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Send AFK/idle heartbeats to ActivityWatch using Wayland idle protocol via swayidle.
+
+set -u
+
+aw_url="http://127.0.0.1:5600"
+bucket="aw-watcher-afk_$(hostname)"
+bucket_url="${aw_url}/api/0/buckets/${bucket}"
+hostname_value=$(hostname)
+poll_time=45
+pulsetime=60
+afk_timeout=180
+
+state_file="/tmp/lowr-aw-afk-state"
+
+cleanup() {
+  rm -f "$state_file"
+  [[ -n ${swayidle_pid:-} ]] && kill "$swayidle_pid" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
+ensure_bucket() {
+  curl -sf --max-time 2 "$bucket_url" > /dev/null 2>&1 && return 0
+
+  payload=$(jq -n \
+    --arg client "lowr-aw-afk-watcher" \
+    --arg type "afkstatus" \
+    --arg hostname "$hostname_value" \
+    '{client: $client, type: $type, hostname: $hostname}')
+
+  curl -sf --max-time 2 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "$bucket_url" > /dev/null 2>&1
+}
+
+send_heartbeat() {
+  local status="$1"
+  local timestamp payload
+
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+
+  payload=$(jq -n \
+    --arg ts "$timestamp" \
+    --arg status "$status" \
+    '{timestamp: $ts, duration: 0, data: {status: $status}}')
+
+  curl -sf --max-time 2 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "${bucket_url}/heartbeat?pulsetime=${pulsetime}" > /dev/null 2>&1
+}
+
+main() {
+  local swayidle_pid current_status
+
+  echo "not-afk" > "$state_file"
+
+  while ! lowr-cmd-present swayidle jq curl; do
+    sleep "$poll_time"
+  done
+
+  swayidle -w \
+    timeout "$afk_timeout" "echo afk > $state_file" \
+    resume "echo not-afk > $state_file" &
+  swayidle_pid=$!
+
+  while true; do
+    if ! ensure_bucket; then
+      sleep "$poll_time"
+      continue
+    fi
+
+    if pgrep -x hyprlock > /dev/null 2>&1; then
+      current_status="afk"
+    else
+      current_status=$(cat "$state_file" 2>/dev/null || echo "not-afk")
+    fi
+    send_heartbeat "$current_status" || true
+
+    sleep "$poll_time"
+  done
+}
+
+main "$@"

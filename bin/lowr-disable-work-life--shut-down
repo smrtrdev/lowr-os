@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Disable the Lowr work-life shutdown timer and stop any active shutdown warning.
+
+set -e
+
+TIMER_UNIT="lowr-work-life--shut-down.timer"
+SERVICE_UNIT="lowr-work-life--shut-down.service"
+
+if ! systemctl --user cat "$TIMER_UNIT" >/dev/null 2>&1; then
+  echo "Work-life shutdown timer is not installed. Run lowr-install-work-life--shut-down first." >&2
+  exit 1
+fi
+
+systemctl --user disable --now "$TIMER_UNIT"
+systemctl --user stop "$SERVICE_UNIT"
+
+echo "Work-life shutdown timer disabled and any active shutdown warning stopped."

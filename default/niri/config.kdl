@@ -1,0 +1,287 @@
+// Minimal Lowr Niri configuration.
+
+input {
+  keyboard {
+    xkb {
+      layout "de,custom"
+      options "grp:win_space_toggle"
+    }
+
+    repeat-rate 40
+    repeat-delay 600
+    // numlock
+  }
+  touchpad {
+    natural-scroll
+    click-method "clickfinger"
+    scroll-factor 0.4
+    // tap
+    dwt
+  }
+  focus-follows-mouse max-scroll-amount="0%"
+  warp-mouse-to-focus
+}
+
+layout {
+  gaps 4
+  empty-workspace-above-first
+  center-focused-column "on-overflow"
+  always-center-single-column
+  default-column-width { proportion 0.5; }
+
+  preset-column-widths {
+      proportion 0.33333
+      proportion 0.5
+      proportion 0.66667
+      proportion 1.0
+  }
+
+  preset-window-heights {
+      proportion 0.33333
+      proportion 0.5
+      proportion 0.66667
+      proportion 1.0
+  }
+
+  focus-ring {
+      on
+      width 2
+      active-color "#89b4fa"
+      inactive-color "#313244"
+      urgent-color "#9b0000"
+  }
+
+  border {
+    on
+    width 1
+    active-color "#33ccff"
+    inactive-color "#595959"
+    urgent-color "#9b0000"
+  }
+
+  shadow {
+    off
+  }
+}
+
+animations {
+  off
+}
+
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
+
+spawn-at-startup "uwsm-app" "--" "hypridle"
+spawn-at-startup "uwsm-app" "--" "mako"
+spawn-at-startup "uwsm-app" "--" "waybar"
+spawn-at-startup "uwsm-app" "--" "fcitx5" "--disable" "notificationitem"
+spawn-sh-at-startup "exec uwsm-app -- swaybg -i \"$HOME/.config/lowr/current/background\" -m fill"
+spawn-at-startup "uwsm-app" "--" "swayosd-server"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+spawn-at-startup "lowr-cmd-first-run"
+spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "XDG_SESSION_TYPE" "XDG_SESSION_DESKTOP" "NIRI_SOCKET"
+spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
+
+workspace "office" {
+    open-on-output "eDP-1"
+}
+workspace "web" {
+   open-on-output "DP-8"
+}
+
+spawn-at-startup "lowr-launch-browser"
+spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
+// spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
+spawn-at-startup "uwsm-app" "--" "gtk-launch" "Outlook Business"
+
+window-rule {
+    match at-startup=true app-id="zen"
+    open-on-workspace "web"
+    open-maximized true
+}
+
+window-rule {
+    match at-startup=true app-id="chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
+    open-on-workspace "office"
+}
+window-rule {
+    match at-startup=true app-id="chrome-teams.microsoft.com__-Default"
+    open-on-workspace "office"
+}
+window-rule {
+    match at-startup=true app-id="chrome-outlook.office.com__-Default"
+    open-on-workspace "office"
+}
+
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+window-rule {
+    match app-id=r#"^chrome-windows.cloud.microsoft__webclient_avd_"#
+    default-column-width { proportion 1.0; }
+}
+
+window-rule {
+    match app-id="dev.zed.Zed"
+    match app-id="code"
+    match app-id="jetbrains-rider"
+    match app-id="@opencode-ai/desktop-electron"
+    default-column-width { proportion 1.0; }
+}
+
+window-rule {
+    match app-id="obsidian"
+    default-column-width { proportion 0.66667; }
+}
+window-rule {
+    match app-id="zen"
+    default-column-width { proportion 0.75; }
+}
+
+binds {
+  Mod+Return { spawn "lowr-launch-terminal"; }
+  Mod+Alt+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
+  Mod+Ctrl+Return { spawn "lowr-launch-terminal" "-e" "zellij"; }
+  Mod+Shift+Return { spawn "lowr-launch-browser"; }
+  Mod+E { spawn "nautilus" "--new-window"; }
+  Mod+Shift+B { spawn "lowr-launch-browser"; }
+  Mod+Shift+A { spawn "lowr-launch-editor"; }
+  Mod+Shift+D { spawn "lowr-launch-tui" "lazydocker"; }
+  Mod+Shift+O { spawn "lowr-launch-or-focus" "^obsidian$" "uwsm-app -- obsidian -disable-gpu --enable-wayland-ime"; }
+
+  Mod+Shift+Space { spawn "lowr-toggle-waybar"; }
+  Mod+Alt+P { spawn "lowr-toggle-notebook-monitor"; }
+  Mod+Shift+Slash { show-hotkey-overlay; }
+
+
+  // Window management
+  Mod+Q { close-window; }
+  Mod+F { maximize-column; }
+  Mod+Shift+F { fullscreen-window; }
+  Mod+Ctrl+F { toggle-window-floating; }
+  Mod+Alt+F { set-column-width "97%"; }
+  Mod+Shift+C { center-column; }
+
+  // Copy / Paste
+  Mod+C { spawn "wtype" "-M" "ctrl" "-k" "Insert" "-m" "ctrl"; }
+  Mod+V { spawn "wtype" "-M" "shift" "-k" "Insert" "-m" "shift"; }
+  Mod+X { spawn "wtype" "-M" "ctrl" "-k" "x" "-m" "ctrl"; }
+  Mod+Ctrl+V { spawn "lowr-launch-walker" "-m" "clipboard"; }
+
+  // Focus
+  Mod+LEFT { focus-column-left; }
+  Mod+T { focus-column-left; }
+  Mod+R { focus-column-right; }
+  Mod+RIGHT { focus-column-right; }
+  Mod+N { focus-workspace-down; }
+  Mod+DOWN { focus-workspace-down; }
+  Mod+M { focus-workspace-up; }
+  Mod+UP { focus-workspace-up; }
+
+  // Move columns windows
+  Mod+Shift+T { move-column-left; }
+  Mod+Shift+LEFT { move-column-left; }
+  Mod+Shift+R { move-column-right; }
+  Mod+Shift+RIGHT { move-column-right; }
+  Mod+Shift+N { move-column-to-workspace-down; }
+  Mod+Shift+DOWN { move-column-to-workspace-down; }
+  Mod+Shift+M { move-column-to-workspace-up; }
+  Mod+Shift+UP { move-column-to-workspace-up; }
+
+  Mod+Ctrl+N { move-workspace-down; }
+  Mod+Alt+N { move-window-down; }
+  Mod+Ctrl+M { move-workspace-up; }
+  Mod+Alt+M { move-window-up; }
+  Mod+Alt+T { focus-monitor-left; }
+  Mod+Alt+R { focus-monitor-right; }
+
+  // Resize
+  Mod+Ctrl+LEFT { set-column-width "-10%"; }
+  Mod+Ctrl+RIGHT { set-column-width "+10%"; }
+  Mod+Ctrl+UP { set-window-height "+10%"; }
+  Mod+Ctrl+DOWN { set-window-height "-10%"; }
+  Mod+Ctrl+Shift+T { set-column-width "-10%"; }
+  Mod+Ctrl+Shift+R { set-column-width "+10%"; }
+  Mod+Ctrl+Shift+M { set-window-height "+10%"; }
+  Mod+Ctrl+Shift+N { set-window-height "-10%"; }
+
+  // Preset widths
+  Mod+S { switch-preset-column-width; }
+  Mod+H { switch-preset-window-height; }
+
+  // Workspaces
+  Mod+P { toggle-overview; }
+
+  Mod+dead_circumflex { focus-workspace "office"; }
+  Mod+0 { focus-workspace "web"; }
+  Mod+1 { focus-workspace 1; }
+  Mod+2 { focus-workspace 2; }
+  Mod+3 { focus-workspace 3; }
+  Mod+4 { focus-workspace 4; }
+  Mod+5 { focus-workspace 5; }
+  Mod+6 { focus-workspace 6; }
+  Mod+7 { focus-workspace 7; }
+  Mod+8 { focus-workspace 8; }
+  Mod+9 { focus-workspace 9; }
+  Mod+ALT+D { move-workspace-to-monitor-left; }
+  Mod+ALT+H { move-workspace-to-monitor-right; }
+  Mod+Shift+1 { move-column-to-workspace 1; }
+  Mod+Shift+2 { move-column-to-workspace 2; }
+  Mod+Shift+3 { move-column-to-workspace 3; }
+  Mod+Shift+4 { move-column-to-workspace 4; }
+  Mod+Shift+5 { move-column-to-workspace 5; }
+  Mod+Shift+6 { move-column-to-workspace 6; }
+  Mod+Shift+7 { move-column-to-workspace 7; }
+  Mod+Shift+8 { move-column-to-workspace 8; }
+  Mod+Shift+9 { move-column-to-workspace 9; }
+
+  // Scroll through workspaces
+  Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+  Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+
+  // Capture
+  Print { screenshot; }
+  Mod+Print { screenshot-screen; }
+  Mod+Shift+Print { screenshot-window; }
+
+  // Mod+Print { spawn "lowr-cmd-screenshot" "smart"; }
+  // Print { spawn "lowr-cmd-screenshot" "fullscreen"; }
+  Mod+Shift+Y { spawn "lowr-cmd-screenrecord"; }
+  Mod+Alt+Y { spawn "lowr-cmd-screenrecord" "--stop-recording"; }
+
+
+  // Lock
+  Mod+J { spawn "lowr-lock-screen"; }
+  Mod+Ctrl+Z { spawn "lowr-toggle-nightlight"; }
+  Mod+Ctrl+I { spawn "lowr-toggle-idle"; }
+
+  // Menus
+  Mod+K { spawn "lowr-menu-keybindings"; }
+  Mod+Ctrl+C { spawn "lowr-menu" "capture"; }
+  Mod+Space { spawn "lowr-launch-walker"; }
+  Mod+Alt+Space { spawn "lowr-menu"; }
+  Mod+Z { spawn "lowr-menu"; }
+  Mod+adiaeresis { spawn "lowr-launch-walker"; }
+  Mod+I { spawn "lowr-menu"; }
+  Mod+Escape { spawn "lowr-menu" "system"; }
+
+  // Notifications
+  Mod+Comma { spawn "makoctl dismiss"; }
+  Mod+Shift+Comma { spawn "makoctl dismiss --all"; }
+
+  // Media keys
+  XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05+"; }
+  XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05-"; }
+  XF86AudioMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+  XF86AudioMicMute { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+  XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%"; }
+  XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+  XF86AudioPlay { spawn "playerctl" "play-pause"; }
+  XF86AudioNext { spawn "playerctl" "next"; }
+  XF86AudioPrev { spawn "playerctl" "previous"; }
+
+  Mod+Shift+E { quit; }
+}

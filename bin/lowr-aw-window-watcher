@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Send focused niri window heartbeats to ActivityWatch using the standard window bucket schema.
+
+set -u
+
+aw_url="http://127.0.0.1:5600"
+bucket="aw-watcher-window_$(hostname)"
+bucket_url="${aw_url}/api/0/buckets/${bucket}"
+hostname_value=$(hostname)
+poll_time=1
+pulsetime=30
+
+ensure_bucket() {
+  if curl -sf --max-time 2 "$bucket_url" > /dev/null 2>&1; then
+    return 0
+  fi
+
+  payload=$(jq -n \
+    --arg client "lowr-niri-window-watcher" \
+    --arg type "currentwindow" \
+    --arg hostname "$hostname_value" \
+    '{client: $client, type: $type, hostname: $hostname}')
+
+  curl -sf --max-time 2 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "$bucket_url" > /dev/null 2>&1
+}
+
+read_focused_window() {
+  local window_json app title pid window_id
+
+  window_json=$(niri msg -j focused-window 2>/dev/null || true)
+  [[ -n $window_json && $window_json != "null" ]] || return 1
+
+  app=$(jq -r '.app_id // .appId // .app // empty' <<<"$window_json")
+  title=$(jq -r '.title // empty' <<<"$window_json")
+  pid=$(jq -r '.pid // empty' <<<"$window_json")
+  window_id=$(jq -r '.id // empty' <<<"$window_json")
+
+  if [[ -z $app && -n $pid && -r /proc/$pid/exe ]]; then
+    app=$(basename "$(readlink "/proc/$pid/exe" 2>/dev/null)")
+  fi
+
+  if [[ -z $app && -n $title ]]; then
+    app="niri"
+  fi
+
+  [[ -n $app || -n $title ]] || return 1
+
+  printf '%s\t%s\t%s\t%s\n' "$app" "$title" "$pid" "$window_id"
+}
+
+send_heartbeat() {
+  local app="$1"
+  local title="$2"
+  local pid="$3"
+  local window_id="$4"
+  local timestamp payload
+
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+
+  payload=$(jq -n \
+    --arg ts "$timestamp" \
+    --arg app "$app" \
+    --arg title "$title" \
+    --arg pid "$pid" \
+    --arg window_id "$window_id" \
+    '{
+      timestamp: $ts,
+      duration: 0,
+      data: {
+        app: $app,
+        title: $title,
+        pid: $pid,
+        window_id: $window_id
+      }
+    }')
+
+  curl -sf --max-time 2 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "${bucket_url}/heartbeat?pulsetime=${pulsetime}" > /dev/null 2>&1
+}
+
+main() {
+  local window_line app title pid window_id
+
+  while true; do
+    if ! lowr-cmd-present niri jq curl; then
+      sleep "$poll_time"
+      continue
+    fi
+
+    if ! ensure_bucket; then
+      sleep "$poll_time"
+      continue
+    fi
+
+    if window_line=$(read_focused_window); then
+      IFS=$'\t' read -r app title pid window_id <<<"$window_line"
+      send_heartbeat "$app" "$title" "$pid" "$window_id" || true
+    fi
+
+    sleep "$poll_time"
+  done
+}
+
+main "$@"

@@ -1,6 +1,9 @@
 lowr-webapp-install "WhatsApp" https://web.whatsapp.com/ WhatsApp.png
+
 lowr-webapp-install "Outlook Business" https://outlook.office.com/ Outlook.png
-lowr-webapp-install "MS Teams" https://teams.microsoft.com/ MSTeams.png
+lowr-webapp-install "MS Teams" https://teams.cloud.microsoft/ MSTeams.png
+lowr-webapp-install "TeamViewer" https://web.teamviewer.com/ TeamViewer.png
+lowr-webapp-install "Windows App" https://windows.cloud.microsoft/ windows.png
 
 lowr-webapp-install "Outlook Personal" https://outlook.live.com/mail/0/ Outlook.png
 lowr-webapp-install "Proton Mail" https://mail.proton.me/ ProtonMail.png

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+git clone https://github.com/MarcoIeni/intellimacs ~/.intellimacs
+
+echo ""
+echo "Intellimacs installed to ~/.intellimacs"
+echo "further info: https://github.com/marcoieni/intellimacs"
+echo ""
+echo "Next step: Install the IdeaVim plugin in your JetBrains IDE:"
+echo "  File -> Settings -> Plugins -> search 'IdeaVim'"
+echo "  (Optional) Also install 'Which-Key' for a command menu"
+echo ""
+
+IDEAVIMRC_CONTENT='" .ideavimrc is a configuration file for IdeaVim plugin. It uses
+"   the same commands as the original .vimrc configuration.
+" You can find a list of commands here: https://jb.gg/h38q75
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+source ~/.local/share/lowr/default/ideavim/.ideavimrc'
+
+setup_ideavimrc() {
+    echo "$IDEAVIMRC_CONTENT" > ~/.ideavimrc
+    echo "Created ~/.ideavimrc"
+}
+
+if [ -f ~/.ideavimrc ]; then
+    if gum confirm "~/.ideavimrc already exists. Replace with intellimacs settings?"; then
+        setup_ideavimrc
+    else
+        echo "Skipped ~/.ideavimrc setup."
+    fi
+else
+    setup_ideavimrc
+fi

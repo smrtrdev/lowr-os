@@ -1,6 +1,361 @@
 #!/bin/bash
 
-# Returns the current working directory of the active terminal window,
+# Returns the current working directory of the active terminal or editor window,
 # so a new terminal window can be started in the same directory.
 
-echo "$HOME"
+# Use the focused Niri window PID, then walk terminal-backed descendant
+# processes to find the shell or foreground TUI owning that terminal session.
+# For editor windows, fall back to their workspace cwd. For Zellij, follow the
+# window title back to the matching server process when the terminal client does
+# not directly own the pane process.
+
+default_dir="$HOME"
+zellij_client_seen=0
+
+print_default_dir() {
+	echo "$default_dir"
+	exit 0
+}
+
+is_terminal_exe() {
+	case "$1" in
+	alacritty | ghostty | kitty | foot | wezterm | wezterm-gui | rio | konsole | xfce4-terminal | tilix | terminator | gnome-terminal-server | ptyxis-agent)
+		return 0
+		;;
+	*)
+		return 1
+		;;
+	esac
+}
+
+is_workspace_app_exe() {
+	case "$1" in
+	code | code-insiders | codium | cursor | windsurf | zed-editor)
+		return 0
+		;;
+	*)
+		return 1
+		;;
+	esac
+}
+
+trim_whitespace() {
+	local value="$1"
+
+	value="${value#"${value%%[![:space:]]*}"}"
+	value="${value%"${value##*[![:space:]]}"}"
+
+	printf '%s\n' "$value"
+}
+
+normalize_path_candidate() {
+	local candidate="$1"
+
+	candidate=$(trim_whitespace "$candidate")
+
+	case "$candidate" in
+	~/*)
+		candidate="${candidate/#\~/$HOME}"
+		;;
+	/*)
+		;;
+	*)
+		return 1
+		;;
+	esac
+
+	if [[ -d $candidate ]]; then
+		printf '%s\n' "$candidate"
+		return 0
+	fi
+
+	if [[ -e $candidate ]]; then
+		dirname "$candidate"
+		return 0
+	fi
+
+	return 1
+}
+
+extract_title_path() {
+	local title="$1"
+	local part candidate
+
+	while IFS= read -r part; do
+		candidate=$(normalize_path_candidate "$part" 2>/dev/null || true)
+		[[ -n $candidate ]] || continue
+
+		printf '%s\n' "$candidate"
+		return 0
+	done < <(printf '%s\n' "$title" | tr '|' '\n')
+
+	return 1
+}
+
+extract_zellij_session_name() {
+	local title="$1"
+	local session_name="${title%% | *}"
+
+	[[ $session_name != "$title" ]] || return 1
+	session_name=$(trim_whitespace "$session_name")
+	[[ -n $session_name ]] || return 1
+
+	printf '%s\n' "$session_name"
+}
+
+list_direct_children() {
+	local parent_pid="$1"
+	local children_file child_pid
+	local -A seen_children=()
+
+	# Some terminal emulators spawn session processes from non-main GUI threads,
+	# so scan every task/*/children entry instead of only task/<pid>/children.
+	for children_file in /proc/$parent_pid/task/*/children; do
+		[[ -r $children_file ]] || continue
+
+		while IFS= read -r child_pid; do
+			[[ -n $child_pid ]] || continue
+			[[ -n ${seen_children[$child_pid]} ]] && continue
+
+			seen_children[$child_pid]=1
+			printf '%s\n' "$child_pid"
+		done < <(tr ' ' '\n' < "$children_file" 2>/dev/null)
+	done
+}
+
+collect_tty_processes() {
+	local parent_pid="$1"
+	local depth="$2"
+	local child_pid tty current_depth current_pid child_comm
+
+	while IFS= read -r child_pid; do
+		[[ -n $child_pid ]] || continue
+		[[ -d /proc/$child_pid ]] || continue
+
+		child_comm=$(get_process_comm "$child_pid" 2>/dev/null || true)
+		[[ $child_comm == "zellij" ]] && zellij_client_seen=1
+
+		tty=$(readlink "/proc/$child_pid/fd/0" 2>/dev/null)
+
+		if [[ $tty == /dev/pts/* || $tty == /dev/tty* ]]; then
+			if [[ -z ${root_pid_by_tty[$tty]} ]]; then
+				root_pid_by_tty[$tty]="$child_pid"
+			fi
+
+			current_depth="${leaf_depth_by_tty[$tty]:--1}"
+			current_pid="${leaf_pid_by_tty[$tty]:-0}"
+
+			if ((depth > current_depth || (depth == current_depth && child_pid > current_pid))); then
+				leaf_depth_by_tty[$tty]="$depth"
+				leaf_pid_by_tty[$tty]="$child_pid"
+			fi
+		fi
+
+		collect_tty_processes "$child_pid" $((depth + 1))
+	done < <(list_direct_children "$parent_pid")
+}
+
+find_zellij_server_pid() {
+	local session_name="$1"
+	local pid args
+
+	while read -r pid args; do
+		[[ -n $pid ]] || continue
+		[[ $args == *"zellij --server "*"/$session_name" ]] || continue
+
+		printf '%s\n' "$pid"
+		return 0
+	done < <(ps -eo pid=,args= 2>/dev/null)
+
+	return 1
+}
+
+get_tmux_client_cwd() {
+	local tty="$1"
+	local client_tty pane_cwd
+
+	lowr-cmd-missing tmux && return 1
+
+	while IFS=$'\t' read -r client_tty pane_cwd; do
+		[[ $client_tty == "$tty" ]] || continue
+		[[ -n $pane_cwd ]] || continue
+
+		printf '%s\n' "$pane_cwd"
+		return 0
+	done < <(tmux list-clients -F '#{client_tty}\t#{pane_current_path}' 2>/dev/null)
+
+	return 1
+}
+
+get_process_comm() {
+	local pid="$1"
+	local comm=""
+
+	[[ -r /proc/$pid/comm ]] || return 1
+	read -r comm < "/proc/$pid/comm" || return 1
+	printf '%s\n' "$comm"
+}
+
+score_path_candidate() {
+	local title="$1"
+	local cwd="$2"
+	local score=0
+	local title_lower="${title,,}"
+	local cwd_lower="${cwd,,}"
+	local cwd_with_home="${cwd/#$HOME/~}"
+	local cwd_with_home_lower="${cwd_with_home,,}"
+	local cwd_basename="$(basename "$cwd")"
+	local cwd_basename_lower="${cwd_basename,,}"
+
+	if [[ -n $title_lower ]]; then
+		[[ $title_lower == "$cwd_lower" ]] && ((score += 700))
+		[[ $title_lower == "$cwd_with_home_lower" ]] && ((score += 700))
+		[[ $title_lower == *"$cwd_lower"* ]] && ((score += 500))
+		[[ $title_lower == *"$cwd_with_home_lower"* ]] && ((score += 500))
+
+		if [[ -n $cwd_basename_lower ]] && [[ $cwd_basename_lower != "/" ]]; then
+			[[ $title_lower == "$cwd_basename_lower" ]] && ((score += 200))
+			[[ $title_lower == *"$cwd_basename_lower"* ]] && ((score += 120))
+		fi
+	fi
+
+	printf '%s\n' "$score"
+}
+
+score_candidate() {
+	local title="$1"
+	local cwd="$2"
+	local tty="$3"
+	local pid="$4"
+	local score=0
+	local title_lower="${title,,}"
+	local comm=""
+	local root_comm=""
+
+	score=$(score_path_candidate "$title" "$cwd")
+
+	comm=$(get_process_comm "$pid" 2>/dev/null || true)
+	if [[ -n $comm ]]; then
+		comm="${comm,,}"
+		[[ $title_lower == *"$comm"* ]] && ((score += 250))
+	fi
+
+	root_comm=$(get_process_comm "${root_pid_by_tty[$tty]:-}" 2>/dev/null || true)
+	if [[ -n $root_comm ]]; then
+		root_comm="${root_comm,,}"
+		[[ $title_lower == *"$root_comm"* ]] && ((score += 100))
+	fi
+
+	score=$((score + ${leaf_depth_by_tty[$tty]:-0}))
+	printf '%s\n' "$score"
+}
+
+score_window_cwd_candidate() {
+	local title="$1"
+	local cwd="$2"
+	local pid="$3"
+	local score=0
+	local title_lower="${title,,}"
+	local comm=""
+
+	score=$(score_path_candidate "$title" "$cwd")
+	comm=$(get_process_comm "$pid" 2>/dev/null || true)
+
+	if [[ -n $comm ]]; then
+		comm="${comm,,}"
+		[[ $title_lower == *"$comm"* ]] && ((score += 150))
+	fi
+
+	printf '%s\n' "$score"
+}
+
+get_candidate_cwd() {
+	local tty="$1"
+	local pid="$2"
+	local cwd=""
+	local comm=""
+
+	cwd=$(readlink "/proc/$pid/cwd" 2>/dev/null || true)
+	comm=$(get_process_comm "$pid" 2>/dev/null || true)
+
+	if [[ $comm == "tmux" ]]; then
+		cwd=$(get_tmux_client_cwd "$tty" 2>/dev/null || printf '%s' "$cwd")
+	fi
+
+	if [[ -z $cwd ]] && [[ -n ${root_pid_by_tty[$tty]:-} ]]; then
+		cwd=$(readlink "/proc/${root_pid_by_tty[$tty]}/cwd" 2>/dev/null || true)
+	fi
+
+	[[ -n $cwd ]] || return 1
+	printf '%s\n' "$cwd"
+}
+
+consider_candidate() {
+	local pid="$1"
+	local score="$2"
+	local cwd="$3"
+
+	if ((score > selected_score || (score == selected_score && pid > selected_pid))); then
+		selected_pid="$pid"
+		selected_score="$score"
+		selected_cwd="$cwd"
+	fi
+}
+
+if lowr-cmd-missing niri jq; then
+	print_default_dir
+fi
+
+focused_window=$(niri msg -j windows 2>/dev/null | jq -c '.[] | select(.is_focused) | {pid, title}' | head -n1)
+[[ -n $focused_window ]] || print_default_dir
+
+window_pid=$(jq -r '.pid // empty' <<<"$focused_window")
+window_title=$(jq -r '.title // empty' <<<"$focused_window")
+
+[[ -n $window_pid ]] || print_default_dir
+[[ -r /proc/$window_pid/exe ]] || print_default_dir
+
+window_exe=$(basename "$(readlink "/proc/$window_pid/exe" 2>/dev/null)")
+
+declare -A root_pid_by_tty=()
+declare -A leaf_pid_by_tty=()
+declare -A leaf_depth_by_tty=()
+
+collect_tty_processes "$window_pid" 1
+
+if [[ $zellij_client_seen == 1 ]]; then
+	zellij_session_name=$(extract_zellij_session_name "$window_title" 2>/dev/null || true)
+	if [[ -n $zellij_session_name ]]; then
+		zellij_server_pid=$(find_zellij_server_pid "$zellij_session_name" 2>/dev/null || true)
+		if [[ -n $zellij_server_pid ]] && [[ $zellij_server_pid != "$window_pid" ]]; then
+			collect_tty_processes "$zellij_server_pid" 1
+		fi
+	fi
+fi
+
+selected_pid=0
+selected_score=-1
+selected_cwd=""
+
+for tty in "${!leaf_pid_by_tty[@]}"; do
+	pid="${leaf_pid_by_tty[$tty]}"
+	candidate_cwd=$(get_candidate_cwd "$tty" "$pid" 2>/dev/null || true)
+	[[ -n $candidate_cwd ]] || continue
+
+	candidate_score=$(score_candidate "$window_title" "$candidate_cwd" "$tty" "$pid")
+	consider_candidate "$pid" "$candidate_score" "$candidate_cwd"
+done
+
+title_cwd=$(extract_title_path "$window_title" 2>/dev/null || true)
+if [[ -n $title_cwd ]]; then
+	title_score=$(score_window_cwd_candidate "$window_title" "$title_cwd" "$window_pid")
+	consider_candidate "$window_pid" "$title_score" "$title_cwd"
+fi
+
+window_cwd=$(readlink "/proc/$window_pid/cwd" 2>/dev/null || true)
+if [[ -n $window_cwd ]] && { is_workspace_app_exe "$window_exe" || [[ -z $selected_cwd ]]; }; then
+	window_score=$(score_window_cwd_candidate "$window_title" "$window_cwd" "$window_pid")
+	consider_candidate "$window_pid" "$window_score" "$window_cwd"
+fi
+
+[[ -n $selected_cwd ]] && echo "$selected_cwd" || print_default_dir

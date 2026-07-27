@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Send an ActivityWatch heartbeat for terminal activity: current directory and git repo.
+# Designed to be called from shell prompt hooks (bash PROMPT_COMMAND, nushell pre_prompt).
+
+aw_url="http://localhost:5600"
+bucket="aw-watcher-terminal_$(hostname)"
+
+cwd="$PWD"
+git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+project="${git_root##*/}"
+now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+
+bucket_url="${aw_url}/api/0/buckets/${bucket}"
+
+# Create the bucket if ActivityWatch doesn't have it yet.
+if ! curl -sf --max-time 2 "$bucket_url" > /dev/null 2>&1; then
+  payload=$(jq -n \
+    --arg client "lowr-time-tracker" \
+    --arg type "app.editor.activity" \
+    --arg hostname "$(hostname)" \
+    '{client: $client, type: $type, hostname: $hostname}')
+  if ! curl -sf --max-time 2 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$payload" \
+    "$bucket_url" > /dev/null 2>&1; then
+    exit 0  # Server not running yet; skip heartbeat
+  fi
+fi
+
+# Send heartbeat
+payload=$(jq -n \
+  --arg ts "$now" \
+  --arg cwd "$cwd" \
+  --arg project "$project" \
+  --arg path "$git_root" \
+  '{timestamp: $ts, duration: 0, data: {file: $cwd, project: $project, path: $path}}')
+curl -sf --max-time 2 -X POST \
+  -H "Content-Type: application/json" \
+  -d "$payload" \
+  "${bucket_url}/heartbeat?pulsetime=30" \
+  > /dev/null 2>&1 || true

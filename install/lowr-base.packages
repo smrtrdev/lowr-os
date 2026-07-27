@@ -6,13 +6,14 @@ alacritty
 alsa-utils
 asdcontrol
 avahi
+azure-cli
 bash-completion
 bat
 bluetui
 bolt
 brightnessctl
 btop
-chromium
+# chromium
 clang
 claude-code
 cups
@@ -22,7 +23,6 @@ cups-pdf
 docker
 docker-buildx
 docker-compose
-dotnet-runtime-9.0
 dust
 evince
 exfatprogs
@@ -36,7 +36,6 @@ fd
 ffmpegthumbnailer
 fontconfig
 fzf
-ghostty
 github-cli
 gnome-calculator
 gnome-keyring
@@ -124,12 +123,16 @@ unzip
 usage
 uwsm
 waybar
+wev
+wezterm
 whois
 wireless-regdb
 wiremix
 wireplumber
 wl-clipboard
 woff2-font-awesome
+worktrunk
+wtype
 xwayland-satellite
 xdg-desktop-portal-gtk
 xdg-desktop-portal-gnome
@@ -137,5 +140,6 @@ xdg-terminal-exec
 xmlstarlet
 yaru-icon-theme
 yay
+yazi
 zellij
 zoxide

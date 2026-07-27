@@ -55,7 +55,8 @@ export def --env --wrapped zi [...rest: string] {
 # }
 
 export def --wrapped lsa [...rest: string] {
-  ls -a ...$rest
+  let args = if ($rest | is-empty) { ["." ] } else { $rest }
+  ls --all ...$args
 }
 
 export def --wrapped lt [...rest: string] {
@@ -95,7 +96,7 @@ export def eff [] {
   run-external $editor $target
 }
 
-export def --wrapped open [...rest: string] {
+export def --wrapped xopen [...rest: string] {
   ^xdg-open ...$rest
 }
 
@@ -136,3 +137,5 @@ export alias g = git
 export alias gcm = git commit -m
 export alias gcam = git commit -a -m
 export alias gcad = git commit -a --amend
+
+export alias zed = zeditor

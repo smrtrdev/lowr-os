@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Launch default terminal (xdg-terminal).
+args=("$@")
+exec_index=-1
+has_working_directory=0
+
+for arg in "${args[@]}"; do
+  if [[ $arg == "--dir" ]] || [[ $arg == --working-directory=* ]]; then
+    has_working_directory=1
+    break
+  fi
+done
+
+if (( ! has_working_directory )); then
+  working_directory=$(lowr-cmd-terminal-cwd 2>/dev/null || true)
+  if [[ -n $working_directory ]]; then
+    args=(--dir="$working_directory" "${args[@]}")
+  fi
+fi
+
+exec setsid uwsm-app -- xdg-terminal-exec "${args[@]}"

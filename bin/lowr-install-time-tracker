@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Install ActivityWatch for time tracking: window, idle, git repo, and browser activity.
+
+set -e
+
+# ── Step 1: Install AUR packages ─────────────────────────────────────────────
+
+echo "Installing ActivityWatch..."
+if ! lowr-pkg-present activitywatch-bin; then
+  lowr-pkg-aur-add activitywatch-bin
+fi
+
+# Use Lowr's Wayland-native afk watcher and niri watcher for idle and window tracking.
+echo "Installing ActivityWatch helpers..."
+if lowr-cmd-missing jq curl; then
+  lowr-pkg-add jq curl
+fi
+if lowr-cmd-missing swayidle; then
+  lowr-pkg-add swayidle
+fi
+
+# ── Step 2: Install systemd user service files ───────────────────────────────
+
+# activitywatch-bin doesn't install service files to systemd paths.
+echo "Installing ActivityWatch service files..."
+mkdir -p "$HOME/.config/systemd/user"
+mkdir -p "$HOME/.config/autostart"
+
+cat > "$HOME/.config/systemd/user/aw-server.service" << 'EOF'
+[Unit]
+Description=ActivityWatch Server
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/opt/activitywatch/aw-server-rust/aw-server-rust
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+cat > "$HOME/.config/systemd/user/lowr-aw-afk-watcher.service" << 'EOF'
+[Unit]
+Description=Lowr ActivityWatch Wayland AFK Watcher
+After=aw-server.service
+Requires=aw-server.service
+
+[Service]
+Environment=PATH=%h/.local/share/lowr/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/share/lowr/bin/lowr-aw-afk-watcher
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+cat > "$HOME/.config/systemd/user/lowr-aw-window-watcher.service" << 'EOF'
+[Unit]
+Description=Lowr ActivityWatch niri Window Watcher
+After=aw-server.service
+Requires=aw-server.service
+
+[Service]
+Environment=PATH=%h/.local/share/lowr/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/share/lowr/bin/lowr-aw-window-watcher
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+
+# Prevent aw-qt autostart from launching the stock aw-watcher-window watcher.
+cat > "$HOME/.config/autostart/aw-qt.desktop" << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=ActivityWatch
+Hidden=true
+EOF
+
+systemctl --user daemon-reload
+
+# ── Step 3: Enable systemd user services ─────────────────────────────────────
+
+echo "Enabling ActivityWatch services..."
+systemctl --user import-environment WAYLAND_DISPLAY DISPLAY NIRI_SOCKET XDG_RUNTIME_DIR
+systemctl --user enable --now aw-server.service
+systemctl --user disable --now aw-awatcher.service >/dev/null 2>&1 || true
+rm -f "$HOME/.config/systemd/user/aw-awatcher.service"
+systemctl --user disable --now aw-watcher-afk.service >/dev/null 2>&1 || true
+rm -f "$HOME/.config/systemd/user/aw-watcher-afk.service"
+systemctl --user enable --now lowr-aw-afk-watcher.service
+systemctl --user restart lowr-aw-afk-watcher.service
+systemctl --user enable --now lowr-aw-window-watcher.service
+systemctl --user restart lowr-aw-window-watcher.service
+
+# ── Step 3: Browser extension instructions ───────────────────────────────────
+
+echo
+echo "──────────────────────────────────────────────────────────"
+echo "  Browser Extension (for web activity tracking)"
+echo "──────────────────────────────────────────────────────────"
+echo "  Search 'ActivityWatch Web Watcher' in:"
+echo "    - Chrome Web Store  (for Chromium)"
+echo "    - Firefox Add-ons   (for Firefox / Zen Browser)"
+echo "  It connects automatically to http://localhost:5600"
+echo "──────────────────────────────────────────────────────────"
+
+# ── Step 4: Success summary ───────────────────────────────────────────────────
+
+echo
+echo "ActivityWatch installed and running!"
+echo
+echo "  Tracking:"
+echo "    Window / app activity  (lowr-aw-window-watcher)"
+echo "    Idle / AFK time        (lowr-aw-afk-watcher)"
+echo "    Directory + git repo   (shell hook — bash + nushell)"
+echo "    Browser                (install extension above)"
+echo
+echo "  Dashboard: http://localhost:5600"
+echo "  Daily summary: lowr-aw-time-tracker"
+echo
+echo "  Shell tracking is active in new terminal sessions."

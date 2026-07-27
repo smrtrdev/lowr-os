@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Enable and start the Lowr work-life shutdown timer.
+
+set -e
+
+TIMER_UNIT="lowr-work-life--shut-down.timer"
+
+if ! systemctl --user cat "$TIMER_UNIT" >/dev/null 2>&1; then
+  echo "Work-life shutdown timer is not installed. Run lowr-install-work-life--shut-down first." >&2
+  exit 1
+fi
+
+systemctl --user enable --now "$TIMER_UNIT"
+
+echo "Work-life shutdown timer enabled and running."
