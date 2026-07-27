@@ -3,6 +3,6 @@ set -e
 
 # Reinstall the Lowr configuration directory from the git source.
 
-git clone "https://codeberg.org/smrtr/lowr-os.git" ~/.local/share/lowr-new >/dev/null
+git clone "https://github.com/smrtrdev/lowr-os.git" ~/.local/share/lowr-new >/dev/null
 mv $LOWR_PATH ~/.local/share/lowr-old
 mv ~/.local/share/lowr-new $LOWR_PATH
