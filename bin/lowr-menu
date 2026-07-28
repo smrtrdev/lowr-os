@@ -306,7 +306,6 @@ show_install_service_menu() {
   *Dropbox*) present_terminal lowr-install-dropbox ;;
   *Tailscale*) present_terminal lowr-install-tailscale ;;
   *NordVPN*) present_terminal lowr-install-nordvpn ;;
-  *Bitwarden*) install_and_launch "Bitwarden" "bitwarden bitwarden-cli" "bitwarden" ;;
   *Chromium*) present_terminal lowr-install-chromium-google-account ;;
   *) show_install_menu ;;
   esac

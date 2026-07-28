@@ -168,4 +168,3 @@ def --env lowr-init-activitywatch [] {
 if (lowr-command-present "aw-qt") { lowr-init-activitywatch }
 
 use try_alias.nu *
-use bw.nu *
