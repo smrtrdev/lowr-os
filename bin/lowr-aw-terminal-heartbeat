@@ -1,42 +1,85 @@
 #!/bin/bash
 
-# Send an ActivityWatch heartbeat for terminal activity: current directory and git repo.
-# Designed to be called from shell prompt hooks (bash PROMPT_COMMAND, nushell pre_prompt).
+# Send structured terminal context. Never include commands, arguments, or environment values.
 
 aw_url="http://localhost:5600"
 bucket="aw-watcher-terminal_$(hostname)"
-
 cwd="$PWD"
-git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
-project="${git_root##*/}"
 now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
 
+if ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+  exit 0
+fi
+
+git_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+git_common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
+branch=$(git branch --show-current 2>/dev/null || true)
+remote=$(git config --get remote.origin.url 2>/dev/null || true)
+
+repository=""
+worktree=""
+project=""
+if [[ -n $git_root ]]; then
+  worktree="$git_root"
+  if [[ ${git_common##*/} == ".git" ]]; then
+    repository=${git_common%/.git}
+  else
+    repository="$git_root"
+  fi
+  project=${repository##*/}
+fi
+
+sanitize_remote() {
+  local value=$1
+  if [[ $value == *"://"* ]]; then
+    value=${value#*://}
+    value=${value##*@}
+  elif [[ $value == *@*:* ]]; then
+    value=${value#*@}
+    value=${value/:/\/}
+  fi
+  value=${value%%\?*}
+  value=${value%%#*}
+  value=${value%.git}
+  value=${value#/}
+  printf '%s' "$value"
+}
+
+remote=$(sanitize_remote "$remote")
 bucket_url="${aw_url}/api/0/buckets/${bucket}"
 
-# Create the bucket if ActivityWatch doesn't have it yet.
-if ! curl -sf --max-time 2 "$bucket_url" > /dev/null 2>&1; then
+if ! curl -sf --max-time 2 "$bucket_url" >/dev/null 2>&1; then
   payload=$(jq -n \
     --arg client "lowr-time-tracker" \
     --arg type "app.editor.activity" \
     --arg hostname "$(hostname)" \
     '{client: $client, type: $type, hostname: $hostname}')
-  if ! curl -sf --max-time 2 -X POST \
+  curl -sf --max-time 2 -X POST \
     -H "Content-Type: application/json" \
-    -d "$payload" \
-    "$bucket_url" > /dev/null 2>&1; then
-    exit 0  # Server not running yet; skip heartbeat
-  fi
+    -d "$payload" "$bucket_url" >/dev/null 2>&1 || exit 0
 fi
 
-# Send heartbeat
 payload=$(jq -n \
   --arg ts "$now" \
-  --arg cwd "$cwd" \
+  --arg file "$cwd" \
   --arg project "$project" \
-  --arg path "$git_root" \
-  '{timestamp: $ts, duration: 0, data: {file: $cwd, project: $project, path: $path}}')
+  --arg repository "$repository" \
+  --arg worktree "$worktree" \
+  --arg branch "$branch" \
+  --arg remote "$remote" \
+  '{timestamp: $ts, duration: 0, data: {
+    file: $file,
+    project: $project,
+    repository: $repository,
+    worktree: $worktree,
+    branch: $branch,
+    remote: $remote
+  }}')
+
 curl -sf --max-time 2 -X POST \
   -H "Content-Type: application/json" \
   -d "$payload" \
   "${bucket_url}/heartbeat?pulsetime=30" \
-  > /dev/null 2>&1 || true
+  >/dev/null 2>&1 || true
+
+exit 0

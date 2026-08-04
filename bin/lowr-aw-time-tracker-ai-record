@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Generate, read, or refine an ActivityWatch daily record with AI.
+
+set -euo pipefail
+
+LOWR_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec "$LOWR_PATH/bin/lowr-aw-time-tracker" ai-record "$@"

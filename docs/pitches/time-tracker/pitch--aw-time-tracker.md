@@ -22,9 +22,11 @@ Implement the first version as a Python CLI exposed through the Lowr command `bi
 
 The core input sources are:
 
-- `aw-watcher-window_lowrarch01`: primary source for active work context.
-- `aw-watcher-terminal_lowrarch01`: supporting source for project attribution through active paths.
-- `aw-watcher-afk_lowrarch01`: source for active/away periods and break detection.
+- `aw-watcher-window_<hostname>`: primary source for active work context.
+- `aw-watcher-terminal_<hostname>`: supporting source for project, repository, worktree, and branch attribution.
+- `aw-watcher-afk_<hostname>`: source for active/away periods and break detection.
+- Compatible ActivityWatch web-watcher buckets: supporting evidence correlated only with active browser windows.
+- Local Git history and `aw-watcher-git_<hostname>`: commit evidence that annotates activity without creating tracked time.
 
 The summarizer should:
 
@@ -36,8 +38,19 @@ The summarizer should:
 - Detect at most two coffee breaks per day from AFK periods: one 15-minute break around 09:30 and one 15-minute break around 15:00.
 - If a coffee-related AFK period is longer than 15 minutes, track only the 15-minute coffee break and leave the remaining AFK time untracked.
 - Treat lunch and other AFK breaks like untracked away time: subtract them from project work but do not create records for them.
-- Group adjacent or related blocks into clean records with project, subject, description, start, and end.
-- Produce an editable daily summary before anything is exported or finalized.
+- Subtract AFK again after rounding so rounded work periods can never reclaim away time; configured coffee records remain the explicit exception.
+- Collapse assigned work into one daily summary per project, retaining exact disjoint start/end periods and total minutes so gaps are never counted as work.
+- Keep unrelated `unassigned` periods separate for review instead of combining unclear activity.
+- Retain structured evidence and attribution diagnostics through merging and rounding.
+- Generate conservative deterministic descriptions from commits, pull requests, titles, branches, and worktrees.
+- Report exact rounded minutes per project and overall, plus assigned, described, and confidence-weighted minutes.
+- Optionally postprocess weak descriptions through an explicitly enabled, redacted AI CLI; AI cannot alter record times or high-confidence project mappings.
+- Let AI connect lower-confidence solution/application aliases to an existing canonical project, regroup the report afterward, and retain only validated high-confidence aliases in global time-tracker memory.
+- Stream Pi JSON-mode reasoning and response deltas to stderr as they arrive, then print the final report on stdout.
+- Store immutable report versions in SQLite: deterministic `record` returns the latest version, `ai-record` creates a refined child version, and both `--new` and `--improve "prompt"` insert and enable a new version instead of overwriting history.
+- List a day's report IDs with `list --date YYYY-MM-DD` and mark the version that counts with `enable ID`; normal day queries still show the latest version.
+- Produce an ERP-friendly chronological table by default, with one row per exact work period plus project and overall totals.
+- Keep the editable YAML representation available through `--format yaml` before anything is exported or finalized.
 
 Project attribution should start with explicit local rules, for example:
 
@@ -49,7 +62,7 @@ Project attribution should start with explicit local rules, for example:
 
 Additional information sources can be added later to improve summaries:
 
-- GitHub activity for commits, issues, and pull requests.
+- Authenticated GitHub API activity beyond active web pages and local Git history.
 - MS Graph calendar events for meetings.
 - Outlook sent mails.
 - Teams calls.
@@ -58,9 +71,12 @@ These should not be required for the first version. The first version should wor
 
 Repository placement:
 
-- User-facing command: `bin/lowr-aw-time-tracker`.
+- Core user-facing command: `bin/lowr-aw-time-tracker`.
+- Deterministic convenience command: `bin/lowr-aw-time-tracker-record`.
+- AI convenience command: `bin/lowr-aw-time-tracker-ai-record`, with `--prompt` for generation guidance.
 - Existing installer remains responsible for ActivityWatch setup: `bin/lowr-install-time-tracker`.
 - Default project mapping rules: `config/lowr/time-tracker.toml`.
+- User configuration, learned memory, and records: `~/.config/time-tracker/{config.toml,memory.json,records.sqlite}` in a dedicated Git repository.
 - Pitch and planning notes: `docs/pitches/time-tracker/`.
 
 If the implementation grows beyond a single script, move reusable internals into a dedicated implementation directory later. Do not introduce that structure before it is needed.
@@ -84,7 +100,8 @@ If the implementation grows beyond a single script, move reusable internals into
 - No automatic billing submission.
 - No cloud sync.
 - No requirement to classify every minute perfectly.
-- No deep browser-history analysis beyond what ActivityWatch already records.
+- No background-tab or deep browser-history analysis; only ActivityWatch web events overlapping an active browser window can support a record.
+- No AI processing by default, and no AI authority over tracked time or high-confidence deterministic attribution.
 - No Microsoft Graph, GitHub, Outlook, or Teams integration in the first slice.
 - No silent guessing for unclear time blocks; unclear blocks must remain reviewable.
 - No larger internal package layout until the first script becomes too large to maintain comfortably.

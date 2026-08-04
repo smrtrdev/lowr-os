@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Record a sanitized commit milestone in ActivityWatch. This hook must never fail a commit.
+
+exit_successfully() {
+  exit 0
+}
+trap exit_successfully ERR HUP INT TERM
+
+if ! command -v git >/dev/null 2>&1 || ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+  exit 0
+fi
+
+worktree=$(git rev-parse --show-toplevel 2>/dev/null || true)
+git_common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
+hash=$(git rev-parse HEAD 2>/dev/null || true)
+if [[ -z $worktree || -z $hash ]]; then
+  exit 0
+fi
+
+if [[ ${git_common##*/} == ".git" ]]; then
+  repository=${git_common%/.git}
+else
+  repository=$worktree
+fi
+branch=$(git branch --show-current 2>/dev/null || true)
+subject=$(git log -1 --format=%s HEAD 2>/dev/null || true)
+parents=$(git log -1 --format=%P HEAD 2>/dev/null || true)
+remote=$(git config --get remote.origin.url 2>/dev/null || true)
+now=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+host=$(hostname)
+bucket="aw-watcher-git_${host}"
+aw_url="http://localhost:5600"
+bucket_url="${aw_url}/api/0/buckets/${bucket}"
+
+sanitize_remote() {
+  local value=$1
+  if [[ $value == *"://"* ]]; then
+    value=${value#*://}
+    value=${value##*@}
+  elif [[ $value == *@*:* ]]; then
+    value=${value#*@}
+    value=${value/:/\/}
+  fi
+  value=${value%%\?*}
+  value=${value%%#*}
+  value=${value%.git}
+  value=${value#/}
+  printf '%s' "$value"
+}
+
+remote=$(sanitize_remote "$remote")
+
+if ! curl -sf --max-time 1 "$bucket_url" >/dev/null 2>&1; then
+  bucket_payload=$(jq -n \
+    --arg client "lowr-time-tracker" \
+    --arg type "lowr.git.commit" \
+    --arg hostname "$host" \
+    '{client: $client, type: $type, hostname: $hostname}')
+  curl -sf --max-time 1 -X POST \
+    -H "Content-Type: application/json" \
+    -d "$bucket_payload" "$bucket_url" >/dev/null 2>&1 || exit 0
+fi
+
+payload=$(jq -n \
+  --arg ts "$now" \
+  --arg hash "$hash" \
+  --arg subject "$subject" \
+  --arg repository "$repository" \
+  --arg worktree "$worktree" \
+  --arg branch "$branch" \
+  --arg remote "$remote" \
+  --arg parents "$parents" \
+  '{timestamp: $ts, duration: 0, data: {
+    kind: "commit",
+    hash: $hash,
+    subject: $subject,
+    repository: $repository,
+    worktree: $worktree,
+    branch: $branch,
+    remote: $remote,
+    parents: ($parents | split(" ") | map(select(length > 0)))
+  }}')
+
+curl -sf --max-time 1 -X POST \
+  -H "Content-Type: application/json" \
+  -d "$payload" \
+  "${bucket_url}/heartbeat?pulsetime=0" \
+  >/dev/null 2>&1 || true
+
+exit 0

@@ -4,6 +4,8 @@
 
 set -e
 
+LOWR_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # ── Step 1: Install AUR packages ─────────────────────────────────────────────
 
 echo "Installing ActivityWatch..."
@@ -15,6 +17,9 @@ fi
 echo "Installing ActivityWatch helpers..."
 if lowr-cmd-missing jq curl; then
   lowr-pkg-add jq curl
+fi
+if lowr-cmd-missing sqlite3; then
+  lowr-pkg-add sqlite
 fi
 if lowr-cmd-missing swayidle; then
   lowr-pkg-add swayidle
@@ -95,7 +100,65 @@ systemctl --user restart lowr-aw-afk-watcher.service
 systemctl --user enable --now lowr-aw-window-watcher.service
 systemctl --user restart lowr-aw-window-watcher.service
 
-# ── Step 3: Browser extension instructions ───────────────────────────────────
+# ── Step 4: Install Git commit integration ────────────────────────────────────
+
+echo "Installing ActivityWatch Git hook..."
+hook_source="$LOWR_PATH/config/git/hooks/post-commit"
+global_hooks=$(git config --global --path --get core.hooksPath 2>/dev/null || true)
+system_hooks=$(git config --system --path --get core.hooksPath 2>/dev/null || true)
+local_hooks=$(git config --local --path --get core.hooksPath 2>/dev/null || true)
+repository_git_dir=$(git rev-parse --git-common-dir 2>/dev/null || true)
+repository_hook=""
+if [[ -n $repository_git_dir ]]; then
+  repository_hook="$repository_git_dir/hooks/post-commit"
+fi
+managed_hooks="$HOME/.config/git/hooks"
+hook_target=""
+
+if [[ -n $global_hooks && $global_hooks == /* ]]; then
+  hook_target="$global_hooks/post-commit"
+elif [[ -n $global_hooks ]]; then
+  echo "  Existing global core.hooksPath is repository-relative: $global_hooks"
+  echo "  Lowr did not modify it. Add the dispatcher to each resolved hook directory if desired."
+elif [[ -n $system_hooks ]]; then
+  echo "  Existing system core.hooksPath is configured: $system_hooks"
+  echo "  Lowr did not override it. Add a dispatcher for lowr-aw-git-heartbeat there if desired."
+elif [[ -n $repository_hook && -e $repository_hook ]]; then
+  echo "  Existing repository post-commit hook preserved: $repository_hook"
+  echo "  Lowr did not configure a global hooks path because that would bypass this hook."
+elif [[ -t 0 ]]; then
+  echo "  A global core.hooksPath applies to all repositories and bypasses hooks in their default .git/hooks directories."
+  read -r -p "  Configure the Lowr-managed global hooks path? [y/N] " configure_hooks
+  if [[ $configure_hooks == "y" || $configure_hooks == "Y" ]]; then
+    mkdir -p "$managed_hooks"
+    git config --global core.hooksPath "$managed_hooks"
+    hook_target="$managed_hooks/post-commit"
+  else
+    echo "  Git commit heartbeat hook skipped. Local Git history will still be queried."
+  fi
+else
+  echo "  Git hook setup needs confirmation before configuring a global core.hooksPath; skipped in this noninteractive run."
+fi
+
+if [[ -n $hook_target ]]; then
+  mkdir -p "$(dirname "$hook_target")"
+  if [[ -e $hook_target ]] && ! cmp -s "$hook_source" "$hook_target"; then
+    echo "  Existing post-commit hook preserved: $hook_target"
+    echo "  Add this line to it to enable commit evidence:"
+    echo "    \"$HOME/.local/share/lowr/bin/lowr-aw-git-heartbeat\" >/dev/null 2>&1 || true"
+  else
+    install -m 755 "$hook_source" "$hook_target"
+    echo "  Git commit evidence enabled through $hook_target"
+  fi
+fi
+
+if [[ -n $local_hooks ]]; then
+  echo "  This repository overrides core.hooksPath with $local_hooks; its hook was not changed."
+fi
+
+echo "  Restart GUI Git clients if they were open during installation."
+
+# ── Step 5: Browser extension instructions ───────────────────────────────────
 
 echo
 echo "──────────────────────────────────────────────────────────"
@@ -107,7 +170,7 @@ echo "    - Firefox Add-ons   (for Firefox / Zen Browser)"
 echo "  It connects automatically to http://localhost:5600"
 echo "──────────────────────────────────────────────────────────"
 
-# ── Step 4: Success summary ───────────────────────────────────────────────────
+# ── Step 6: Success summary ───────────────────────────────────────────────────
 
 echo
 echo "ActivityWatch installed and running!"
@@ -116,9 +179,12 @@ echo "  Tracking:"
 echo "    Window / app activity  (lowr-aw-window-watcher)"
 echo "    Idle / AFK time        (lowr-aw-afk-watcher)"
 echo "    Directory + git repo   (shell hook — bash + nushell)"
+echo "    Git commits            (post-commit hook when safely installed)"
 echo "    Browser                (install extension above)"
 echo
 echo "  Dashboard: http://localhost:5600"
-echo "  Daily summary: lowr-aw-time-tracker"
+echo "  Deterministic record: lowr-aw-time-tracker-record"
+echo "  AI-assisted record:  lowr-aw-time-tracker-ai-record"
+echo "  Tracker data:        ~/.config/time-tracker/"
 echo
 echo "  Shell tracking is active in new terminal sessions."

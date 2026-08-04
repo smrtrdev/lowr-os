@@ -1,0 +1,25 @@
+{
+  "window": [
+    {"timestamp": "2026-01-12T08:00:00Z", "duration": 1800, "data": {"app": "Code", "title": "api.py — acme"}},
+    {"timestamp": "2026-01-12T08:30:00Z", "duration": 3600, "data": {"app": "dev.zed.Zed", "title": "pitch--aw-time-tracker.md — lowr"}},
+    {"timestamp": "2026-01-12T09:30:00Z", "duration": 1800, "data": {"app": "org.wezfurlong.wezterm", "title": "acme"}},
+    {"timestamp": "2026-01-12T10:00:00Z", "duration": 1200, "data": {"app": "Zen", "title": "Pull request"}},
+    {"timestamp": "2026-01-12T10:20:00Z", "duration": 1200, "data": {"app": "Zed", "title": "Unknown workspace"}}
+  ],
+  "terminal": [
+    {"timestamp": "2026-01-12T08:00:00Z", "duration": 30, "data": {"file": "/work/acme", "project": "acme", "repository": "/work/acme", "worktree": "/work/acme", "branch": "feature/reporting"}},
+    {"timestamp": "2026-01-12T08:25:00Z", "duration": 30, "data": {"file": "/work/lowr-worktrees/quality", "project": "lowr", "repository": "/work/lowr", "worktree": "/work/lowr.quality", "branch": "feature/time-tracker-quality"}},
+    {"timestamp": "2026-01-12T09:25:00Z", "duration": 30, "data": {"file": "/work/acme-worktrees/reporting", "project": "acme", "repository": "/work/acme", "worktree": "/work/acme.reporting", "branch": "feature/reporting"}}
+  ],
+  "web": [
+    {"timestamp": "2026-01-12T10:00:00Z", "duration": 1200, "data": {"url": "https://github.com/example/acme/pull/42?token=secret#discussion", "title": "Add reporting workflow by example · Pull Request #42"}},
+    {"timestamp": "2026-01-12T11:00:00Z", "duration": 1200, "data": {"url": "https://github.com/example/acme/issues/9?token=background", "title": "Background tab"}}
+  ],
+  "afk": [
+    {"timestamp": "2026-01-12T09:25:00Z", "duration": 1200, "data": {"status": "afk"}},
+    {"timestamp": "2026-01-12T12:00:00Z", "duration": 3600, "data": {"status": "afk"}}
+  ],
+  "git": [
+    {"timestamp": "2026-01-12T08:20:00Z", "duration": 0, "data": {"kind": "commit", "hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "subject": "Add reporting view", "repository": "/work/acme", "worktree": "/work/acme", "branch": "feature/reporting", "parents": ["bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]}}
+  ]
+}

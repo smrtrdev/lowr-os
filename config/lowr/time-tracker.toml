@@ -13,9 +13,75 @@ coffee_window_minutes = 60
 coffee_morning_time = "09:30"
 coffee_afternoon_time = "15:00"
 
+[buckets]
+# Window, terminal, AFK, and Git bucket names default to the current hostname.
+# Compatible web-watcher buckets are discovered by type; explicit names can be added here.
+web = []
+
+[apps.work]
+zed = ["zed", "dev.zed.zed"]
+wezterm = ["wezterm", "org.wezfurlong.wezterm"]
+vscode = ["code", "codium", "vscode", "visual studio code"]
+rider = ["rider", "jetbrains-rider"]
+terminal = ["terminal", "alacritty", "kitty", "ghostty"]
+
+[apps.noise]
+browser = ["zen", "chromium", "firefox", "google-chrome", "brave", "browser"]
+
+# Legacy [noise].apps and [work_apps].apps values remain supported.
 [noise]
 stretch_minutes = 5
 apps = ["zen", "chromium", "firefox", "google-chrome", "brave", "browser"]
 
 [work_apps]
 apps = ["code", "codium", "vscode", "zed", "rider", "wezterm", "terminal", "alacritty", "kitty", "ghostty"]
+
+[terminal]
+nearby_minutes = 5
+# Older context is used only when the window title agrees with its repository/project.
+max_context_age_minutes = 120
+
+[git]
+query_margin_minutes = 30
+correlation_margin_minutes = 15
+timeout_seconds = 5
+# Optional Git names or email addresses used to identify locally relevant commits.
+authors = []
+
+[ai]
+# AI is local-CLI based but the selected CLI may send data to a remote model.
+enabled = false
+provider = "pi"
+thinking_level = "medium"
+timeout_seconds = 60
+minimum_minutes = 15
+include_urls = false
+include_paths = true
+include_titles = true
+include_commit_subjects = true
+allow_project_suggestion = true
+# High-confidence aliases cited from supplied evidence are retained across reports.
+learn_project_aliases = true
+memory_path = "~/.config/time-tracker/memory.json"
+
+[storage]
+database_path = "~/.config/time-tracker/records.sqlite"
+
+# Explicit aliases always override learned memory. Quote aliases containing dots.
+[project_aliases]
+# "Wydler.Crm" = "wam-crm"
+# CRM = "wam-crm"
+
+[[projects]]
+name = "lowr"
+customer = "internal"
+path_prefixes = ["$HOME/.local/share/lowr"]
+title_patterns = ["lowr"]
+url_patterns = ["github.com/*/lowr-os/*"]
+
+# Patterns are case-insensitive globs when they contain *, ?, or [; otherwise
+# title patterns are literal substrings. Paths expand ~ and environment variables.
+# Add project-specific web rules below the corresponding [[projects]] table:
+# [[projects.web]]
+# host = "github.com"
+# path_patterns = ["*/lowr-os/issues/*", "*/lowr-os/pull/*"]
