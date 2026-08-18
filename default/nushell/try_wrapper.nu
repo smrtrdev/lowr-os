@@ -27,5 +27,3 @@ export def --env --wrapped lowr-try [...rest: string] {
     cd ($pwd_line | str replace $marker "")
   }
 }
-
-export alias try = lowr-try
