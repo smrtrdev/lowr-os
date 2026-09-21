@@ -118,6 +118,7 @@ window-rule {
 window-rule {
     match app-id=r#"^org\.wezfurlong\.wezterm$"#
     default-column-width {}
+    default-window-height { proportion 1.0; }
 }
 window-rule {
     match app-id=r#"^chrome-windows.cloud.microsoft__webclient_avd_"#

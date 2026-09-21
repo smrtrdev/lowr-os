@@ -23,7 +23,13 @@ end
 -- This is where you actually apply your config choices
 
 config.initial_cols = 120
-config.initial_rows = 28
+config.initial_rows = 53
+config.window_padding = {
+  left = '1cell',
+  right = '1cell',
+  top = '0.5cell',
+  bottom = '0.6cell',
+}
 
 config.default_prog = { 'nu' }
 config.color_scheme = 'Tokyo Night'
