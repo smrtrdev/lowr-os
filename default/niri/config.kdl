@@ -197,6 +197,8 @@ binds {
   Mod+Alt+M { move-window-up; }
   Mod+Alt+T { focus-monitor-left; }
   Mod+Alt+R { focus-monitor-right; }
+  Mod+Ctrl+D { move-window-to-monitor-left; }
+  Mod+Ctrl+H { move-window-to-monitor-right; }
 
   // Resize
   Mod+Ctrl+LEFT { set-column-width "-10%"; }
