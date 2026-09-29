@@ -4,35 +4,28 @@
 # Note: nushell's completion engine bypasses custom completers when the current
 # token starts with `-`, so flag completions (e.g. `wt switch --<TAB>`) don't
 # appear. Subcommand and value completions work. (nushell/nushell#14504)
-def "nu-complete wt" [context: string] {
-    let worktrunk_bin = if ($env.WORKTRUNK_BIN? | is-not-empty) {
-        $env.WORKTRUNK_BIN
+def "nu-complete wt" [place: record] {
+  let worktrunk_bin = if ($env.WORKTRUNK_BIN? | is-not-empty) {
+    $env.WORKTRUNK_BIN
+  } else {
+    let external = (which -a wt | where type == "external")
+    if ($external | is-empty) { return [] }
+    ($external | get 0.path)
+  }
+
+  let result = (do {
+    with-env { COMPLETE: nu } { ^$worktrunk_bin -- ...$place.command }
+  } | complete)
+  if $result.exit_code != 0 { return [] }
+
+  $result.stdout | lines | each {|line|
+    let parts = ($line | split row "\t")
+    if ($parts | length) >= 2 {
+      { value: ($parts | get 0), description: ($parts | get 1) }
     } else {
-        let external = (which -a wt | where type == "external")
-        if ($external | is-empty) { return [] }
-        ($external | get 0.path)
+      { value: ($parts | get 0) }
     }
-
-    let tokens = ($context | split row " " | where {|t| $t != "" })
-    let tokens = if ($context | str ends-with " ") {
-        $tokens | append ""
-    } else {
-        $tokens
-    }
-
-    let result = (do {
-        with-env { COMPLETE: nu } { ^$worktrunk_bin -- ...$tokens }
-    } | complete)
-    if $result.exit_code != 0 { return [] }
-
-    $result.stdout | lines | each {|line|
-        let parts = ($line | split row "\t")
-        if ($parts | length) >= 2 {
-            { value: ($parts | get 0), description: ($parts | get 1) }
-        } else {
-            { value: ($parts | get 0) }
-        }
-    }
+  }
 }
 
 # Override wt command with file-based directive passing.
