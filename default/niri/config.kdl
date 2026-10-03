@@ -1,5 +1,11 @@
 // Minimal Lowr Niri configuration.
 
+// Home: place the Samsung on the left; the laptop is positioned to its right.
+// Other monitors keep their automatic layout, with the laptop on the left.
+output "Samsung Electric Company CF791 HTRJ401453" {
+  position x=0 y=0
+}
+
 input {
   keyboard {
     xkb {
