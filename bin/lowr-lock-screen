@@ -2,8 +2,16 @@
 
 # Locks the system using hyprlock, but not before ensuring 1password has also been locked, and the screensaver stopped.
 
-# Lock the screen
-pidof hyprlock || hyprlock &
+# Lock the screen and restore Espanso's input handling after unlocking.
+if ! pidof hyprlock >/dev/null; then
+  (
+    if hyprlock; then
+      if lowr-cmd-present espanso && espanso status >/dev/null 2>&1; then
+        espanso restart
+      fi
+    fi
+  ) &
+fi
 
 # Ensure 1password is locked
 # if pgrep -x "1password" >/dev/null; then
