@@ -132,11 +132,12 @@ window-rule {
 }
 
 window-rule {
-    match app-id="dev.zed.Zed"
-    match app-id="code"
-    match app-id="jetbrains-rider"
-    match app-id="@opencode-ai/desktop-electron"
-    default-column-width { proportion 1.0; }
+  match app-id="dev.zed.Zed"
+  match app-id="code"
+  match app-id=r#"^com\.microsoft\.VSCode$"#
+  match app-id="jetbrains-rider"
+  match app-id="@opencode-ai/desktop-electron"
+  default-column-width { proportion 1.0; }
 }
 
 window-rule {
