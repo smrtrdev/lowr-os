@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Install Ollama with Vulkan acceleration using Arch packages.
+
+set -euo pipefail
+
+if (( $# > 1 )); then
+  echo "Usage: lowr-install-ollama [--update-system]" >&2
+  exit 1
+fi
+
+case ${1:-} in
+  --update-system)
+    # Refreshing databases must include a full upgrade on Arch.
+    echo "Refreshing package databases and upgrading system packages before installing Ollama..."
+    sudo pacman -Syu
+    ;;
+  --help|-h)
+    echo "Usage: lowr-install-ollama [--update-system]"
+    echo "  --update-system  Refresh package databases and perform a full system upgrade first."
+    exit 0
+    ;;
+  "") ;;
+  *)
+    echo "Usage: lowr-install-ollama [--update-system]" >&2
+    exit 1
+    ;;
+esac
+
+install_packages() {
+  if ! lowr-pkg-add "$@"; then
+    echo "Package installation failed; Ollama service setup has not been changed." >&2
+    echo "If downloads returned 404, the local package database may be out of date." >&2
+    echo "Refresh it with a full system upgrade and retry: lowr-install-ollama --update-system" >&2
+    exit 1
+  fi
+}
+
+if lowr-cmd-missing lspci; then
+  install_packages pciutils
+fi
+
+# Match PCI display controllers, including 3D-only GPUs, by vendor ID.
+gpus=$(lspci -n -d ::03xx)
+packages=(ollama-vulkan vulkan-tools)
+
+if [[ $gpus == *" 1002:"* ]]; then
+  packages+=(vulkan-radeon)
+fi
+
+if [[ $gpus == *" 8086:"* ]]; then
+  packages+=(vulkan-intel)
+fi
+
+# NVIDIA's Vulkan driver is supplied by the existing NVIDIA installation.
+# ollama-vulkan pulls in ollama and vulkan-icd-loader as dependencies.
+echo "Installing Ollama with Vulkan support..."
+install_packages "${packages[@]}"
+
+# Keep the packaged unit and other user overrides intact. Allow integrated GPUs
+# such as the Radeon 780M, and give the service access to GPU device nodes.
+sudo install -d -m 755 /etc/systemd/system/ollama.service.d
+sudo tee /etc/systemd/system/ollama.service.d/10-lowr-vulkan.conf >/dev/null <<'EOF'
+[Service]
+Environment="OLLAMA_VULKAN=1"
+Environment="OLLAMA_IGPU_ENABLE=1"
+SupplementaryGroups=render video
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable ollama.service
+# Restart also applies the configuration when Ollama was already running.
+sudo systemctl restart ollama.service
+sudo systemctl is-active --quiet ollama.service
+
+echo
+echo "Ollama installed and started."
+echo "Run a model: ollama run <model>"
+echo "Check GPU use while a model is loaded: ollama ps"
+echo "Inspect Vulkan devices: vulkaninfo --summary"
+echo "View service logs: journalctl -u ollama.service -b"

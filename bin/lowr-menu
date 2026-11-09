@@ -334,12 +334,6 @@ show_install_terminal_menu() {
 }
 
 show_install_ai_menu() {
-  ollama_pkg=$(
-    (command -v nvidia-smi &>/dev/null && echo ollama-cuda) ||
-      (command -v rocminfo &>/dev/null && echo ollama-rocm) ||
-      echo ollama
-  )
-
   case $(menu "Install" "  Dictation\n󱚤  Claude Code\n󱚤  Codex\n󱚤  Gemini CLI\n󱚤  Copilot CLI\n󱚤  Cursor CLI\n󱚤  LM Studio\n󱚤  Ollama\n󱚤  Crush") in
   *Dictation*) present_terminal lowr-voxtype-install ;;
   *Claude*) install "Claude Code" "claude-code" ;;
@@ -348,7 +342,7 @@ show_install_ai_menu() {
   *Copilot*) install "Copilot CLI" "github-copilot-cli" ;;
   *Cursor*) install "Cursor CLI" "cursor-cli" ;;
   *Studio*) install "LM Studio" "lmstudio" ;;
-  *Ollama*) install "Ollama" $ollama_pkg ;;
+  *Ollama*) present_terminal lowr-install-ollama ;;
   *Crush*) install "Crush" "crush-bin" ;;
   *) show_install_menu ;;
   esac
