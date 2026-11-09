@@ -91,7 +91,7 @@ spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
 
 workspace "office" {
-    open-on-output "eDP-1"
+  open-on-output "eDP-1"
 }
 workspace "web" {
    open-on-output "DP-8"
@@ -99,8 +99,7 @@ workspace "web" {
 
 spawn-at-startup "lowr-launch-browser"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
-// spawn-at-startup "uwsm-app" "--" "gtk-launch" "MS Teams"
-spawn-at-startup "uwsm-app" "--" "gtk-launch" "Outlook Business"
+spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default"
 
 window-rule {
     match at-startup=true app-id="zen"
@@ -108,17 +107,13 @@ window-rule {
     open-maximized true
 }
 
+// Default-profile Teams and Outlook Business PWAs, including later launches.
 window-rule {
-    match at-startup=true app-id="chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
-    open-on-workspace "office"
-}
-window-rule {
-    match at-startup=true app-id="chrome-teams.microsoft.com__-Default"
-    open-on-workspace "office"
-}
-window-rule {
-    match at-startup=true app-id="chrome-outlook.office.com__-Default"
-    open-on-workspace "office"
+  match app-id="^chrome-ompifgpmddkgmclendfeacglnodjjndh-Default$"
+  match app-id="^chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default$"
+  open-on-workspace "office"
+  default-column-width { proportion 0.97; }
+  open-maximized false
 }
 
 window-rule {
