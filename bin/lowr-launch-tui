@@ -2,4 +2,12 @@
 
 # Launch the TUI command passed in as an argument in the default terminal with an org.lowr.COMMAND app id for styling.
 
-exec setsid uwsm-app -- xdg-terminal-exec --app-id=org.lowr.$(basename $1) -e "$1" "${@:2}"
+APP_ID="org.lowr.$(basename "$1")"
+
+# WezTerm's desktop entry does not expose app-id support to xdg-terminal-exec.
+# A separate GUI process is needed for each app to retain its own class.
+if [[ $(xdg-terminal-exec --print-id) == "org.wezfurlong.wezterm.desktop" ]]; then
+  exec setsid uwsm-app -- wezterm start --always-new-process --class "$APP_ID" -- "$@"
+fi
+
+exec setsid uwsm-app -- xdg-terminal-exec --app-id="$APP_ID" -e "$@"

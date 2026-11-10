@@ -90,16 +90,27 @@ spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DI
 spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
 
+// Initial order; the workspace helper handles home/work output fallback.
+workspace "projmgmt" {
+  open-on-output "DP-8"
+}
+workspace "web" {
+  open-on-output "DP-8"
+}
 workspace "office" {
   open-on-output "eDP-1"
 }
-workspace "web" {
-   open-on-output "DP-8"
-}
 
+spawn-at-startup "lowr-cmd-niri-workspaces" "--watch"
+spawn-at-startup "lowr-launch-or-focus-tui" "steps" "tui"
 spawn-at-startup "lowr-launch-browser"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default"
+
+window-rule {
+  match app-id=r#"^org\.lowr\.steps$"#
+  open-on-workspace "projmgmt"
+}
 
 window-rule {
     match at-startup=true app-id="zen"
@@ -152,6 +163,10 @@ binds {
   Mod+E { spawn "nautilus" "--new-window"; }
   Mod+Shift+B { spawn "lowr-launch-browser"; }
   Mod+Shift+A { spawn "lowr-launch-editor"; }
+  Mod+Ctrl+Shift+A { spawn "lowr-launch-or-focus" "^Agents$" "uwsm-app -- code --agents"; }
+  Mod+Shift+S { spawn "lowr-launch-or-focus-tui" "steps" "tui"; }
+  Mod+Shift+K { spawn "lowr-launch-or-focus-tui" "keeper" "supershell"; }
+  Mod+Shift+V { spawn-sh "lowr-launch-or-focus-tui \"$HOME/.cargo/bin/voci\" shell"; }
   Mod+Shift+D { spawn "lowr-launch-tui" "lazydocker"; }
   Mod+Shift+O { spawn "lowr-launch-or-focus" "^obsidian$" "uwsm-app -- obsidian -disable-gpu --enable-wayland-ime"; }
 
