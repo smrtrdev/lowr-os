@@ -46,6 +46,8 @@ gum
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
+herdr-app
+herdr-core
 hypridle
 niri
 nushell
