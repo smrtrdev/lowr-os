@@ -30,7 +30,6 @@ input {
 
 layout {
   gaps 4
-  empty-workspace-above-first
   center-focused-column "on-overflow"
   always-center-single-column
   default-column-width { proportion 0.5; }
@@ -90,15 +89,15 @@ spawn-at-startup "systemctl" "--user" "import-environment" "DISPLAY" "WAYLAND_DI
 spawn-at-startup "systemctl" "--user" "restart" "lowr-aw-window-watcher.service"
 spawn-at-startup "dbus-update-activation-environment" "--systemd" "--all"
 
-// Initial order; the workspace helper handles home/work output fallback.
+// Initial order; the workspace helper handles external displays and laptop-only use.
 workspace "projmgmt" {
-  open-on-output "DP-8"
-}
-workspace "web" {
-  open-on-output "DP-8"
+  open-on-output "Samsung Electric Company CF791 HTRJ401453"
 }
 workspace "office" {
   open-on-output "eDP-1"
+}
+workspace "web" {
+  open-on-output "Samsung Electric Company CF791 HTRJ401453"
 }
 
 spawn-at-startup "lowr-cmd-niri-workspaces" "--watch"

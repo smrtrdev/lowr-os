@@ -1,27 +1,36 @@
 #!/bin/bash
 
-# Keep project management and web on the available home/work display.
-# Reapply only when the selected output changes, allowing manual rearrangement.
-last_output=""
+# Keep office on the laptop and project management/web on an external display.
+# Reapply only when the selected outputs change, allowing manual rearrangement.
+last_layout=""
 
 place_workspaces() {
-  local output
-  output=$(niri msg -j outputs | jq -r '
+  local layout office_output output
+  layout=$(niri msg -j outputs | jq -r '
     [.[] | select(.current_mode != null)] as $outputs |
-    ([$outputs[] | select(.name == "DP-8")][0] //
-     [$outputs[] | select(.make == "Lenovo Group Limited" and
+    ([$outputs[] | select(.name | startswith("eDP-"))][0]) as $laptop |
+    [$outputs[] | select(.name != $laptop.name)] as $external |
+    ([$external[] | select(.make == "Samsung Electric Company" and
+       .model == "CF791" and .serial == "HTRJ401453")][0] //
+     [$external[] | select(.make == "Lenovo Group Limited" and
        .model == "L29w-30" and .serial == "UPV0RWN9")][0] //
-     [$outputs[] | select(.name == "eDP-1")][0]) | .name // empty
+     $external[0] // $laptop) as $work |
+    if $work == null then empty
+    else [($laptop // $work).name, $work.name] | @tsv end
   ') || return 1
 
-  [[ -z $output || $output == "$last_output" ]] && return 0
+  [[ -z $layout || $layout == "$last_layout" ]] && return 0
+  IFS=$'\t' read -r office_output output <<< "$layout"
 
+  niri msg action move-workspace-to-monitor --reference office "$office_output" || return 1
   niri msg action move-workspace-to-monitor --reference projmgmt "$output" || return 1
   niri msg action move-workspace-to-monitor --reference web "$output" || return 1
-  # Moving each to the top in reverse order leaves projmgmt above web.
+  # Prepend in reverse order: office | projmgmt, web on two screens;
+  # projmgmt, office, web when all three share one screen.
   niri msg action move-workspace-to-index --reference web 1 || return 1
+  niri msg action move-workspace-to-index --reference office 1 || return 1
   niri msg action move-workspace-to-index --reference projmgmt 1 || return 1
-  last_output="$output"
+  last_layout="$layout"
 }
 
 if [[ ${1:-} == "--watch" ]]; then
