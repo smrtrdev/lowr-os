@@ -162,6 +162,7 @@ binds {
   Mod+E { spawn "nautilus" "--new-window"; }
   Mod+Shift+B { spawn "lowr-launch-browser"; }
   Mod+Shift+A { spawn "lowr-launch-editor"; }
+  Mod+Shift+H { spawn "lowr-launch-or-focus" "^herdr-app$" "uwsm-app -- herdr-app"; }
   Mod+Ctrl+Shift+A { spawn "lowr-launch-or-focus" "^Agents$" "uwsm-app -- code --agents"; }
   Mod+Shift+S { spawn "lowr-launch-or-focus-tui" "steps" "tui"; }
   Mod+Shift+K { spawn "lowr-launch-or-focus-tui" "keeper" "supershell"; }
