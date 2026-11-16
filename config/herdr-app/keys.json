@@ -49,6 +49,8 @@
     "ctrl-shift-n": "space.new",
     "ctrl-shift-t": "tab.new",
     "ctrl-shift-k": "mod.open:picker",
+    "alt-space": "mod.open:vim-select",
+    "ctrl-space": "mod.open:vim-select",
     "ctrl-shift-p": "app.palette",
     "ctrl-,": "app.settings",
     "ctrl-shift-o": "pane.split:right",

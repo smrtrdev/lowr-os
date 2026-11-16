@@ -1,0 +1,1 @@
+{ "place": "none", "title": "Vim select", "overlay": { "kind": "popup", "at": "top", "offset": 40, "width": 560, "height": 44 } }
