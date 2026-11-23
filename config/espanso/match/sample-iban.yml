@@ -1,0 +1,17 @@
+matches:
+  - trigger: "::sample-iban"
+    replace: "{{iban}}"
+    vars:
+      - name: iban
+        type: script
+        params:
+          args:
+            - python3
+            - -c
+            - |
+              from secrets import randbelow
+
+              bban = f"00762{randbelow(10**12):012d}"
+              # For the checksum, append CH00 with C=12 and H=17.
+              check_digits = 98 - int(bban + "121700") % 97
+              print(f"CH{check_digits:02d}{bban}", end="")
