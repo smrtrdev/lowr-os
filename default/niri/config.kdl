@@ -99,16 +99,25 @@ workspace "office" {
 workspace "web" {
   open-on-output "Samsung Electric Company CF791 HTRJ401453"
 }
+workspace "ai" {
+  open-on-output "Samsung Electric Company CF791 HTRJ401453"
+}
 
 spawn-at-startup "lowr-cmd-niri-workspaces" "--watch"
 spawn-at-startup "lowr-launch-or-focus-tui" "steps" "tui"
 spawn-at-startup "lowr-launch-browser"
+spawn-at-startup "uwsm-app" "--" "herdr-app"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-ompifgpmddkgmclendfeacglnodjjndh-Default"
 spawn-at-startup "uwsm-app" "--" "gtk-launch" "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default"
 
 window-rule {
   match app-id=r#"^org\.lowr\.steps$"#
   open-on-workspace "projmgmt"
+}
+
+window-rule {
+  match at-startup=true app-id="^herdr-app$"
+  open-on-workspace "ai"
 }
 
 window-rule {
@@ -142,6 +151,7 @@ window-rule {
   match app-id=r#"^com\.microsoft\.VSCode$"#
   match app-id="jetbrains-rider"
   match app-id="@opencode-ai/desktop-electron"
+  match app-id="^herdr-app$"
   default-column-width { proportion 1.0; }
 }
 

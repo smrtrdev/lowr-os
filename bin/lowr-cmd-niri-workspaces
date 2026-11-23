@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Keep office on the laptop and project management/web on an external display.
+# Keep office on the laptop and project management/web/ai on an external display.
 # Reapply only when the selected outputs change, allowing manual rearrangement.
 last_layout=""
 
@@ -25,8 +25,10 @@ place_workspaces() {
   niri msg action move-workspace-to-monitor --reference office "$office_output" || return 1
   niri msg action move-workspace-to-monitor --reference projmgmt "$output" || return 1
   niri msg action move-workspace-to-monitor --reference web "$output" || return 1
-  # Prepend in reverse order: office | projmgmt, web on two screens;
-  # projmgmt, office, web when all three share one screen.
+  niri msg action move-workspace-to-monitor --reference ai "$output" || return 1
+  # Prepend in reverse order: office | projmgmt, web, ai on two screens;
+  # projmgmt, office, web, ai when all four share one screen.
+  niri msg action move-workspace-to-index --reference ai 1 || return 1
   niri msg action move-workspace-to-index --reference web 1 || return 1
   niri msg action move-workspace-to-index --reference office 1 || return 1
   niri msg action move-workspace-to-index --reference projmgmt 1 || return 1
